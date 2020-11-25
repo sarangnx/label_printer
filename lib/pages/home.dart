@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'add.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -22,7 +23,12 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddItem()),
+          );
+        },
         child: Icon(Icons.add),
         elevation: 2.0,
         backgroundColor: Color(0xFFF5855A),
