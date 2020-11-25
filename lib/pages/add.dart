@@ -11,13 +11,18 @@ class AddItem extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            color: Color(0xFFF5855A),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+          icon: Icon(Icons.arrow_back_ios),
+          color: Color(0xFFF5855A),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          'Add New Label',
+          style: TextStyle(color: Color(0xFFF5855A)),
+        ),
       ),
-      body: SafeArea(top: true, child: _ItemForm()),
+      body: _ItemForm(),
     );
   }
 }
@@ -41,7 +46,8 @@ class _ItemFormState extends State<_ItemForm> {
   Widget build(BuildContext context) {
     return Form(
       child: ListView.separated(
-        padding: EdgeInsets.all(20),
+        physics: NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
         separatorBuilder: (BuildContext context, int index) => const Divider(
           color: Colors.transparent,
           height: 40,
@@ -53,7 +59,7 @@ class _ItemFormState extends State<_ItemForm> {
               border: UnderlineInputBorder(
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.all(
-                  Radius.circular(20.0),
+                  Radius.circular(12.0),
                 ),
               ),
               contentPadding: EdgeInsets.fromLTRB(20, -10, 20, 10),
