@@ -31,9 +31,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(
-          'Hello World',
+      backgroundColor: Color(0xFFFFF2ED),
+      body: SafeArea(
+        top: true,
+        child: Center(
+          child: Text(
+            'Hello World',
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -41,15 +45,25 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {},
         child: Icon(Icons.add),
         elevation: 2.0,
+        backgroundColor: Color(0xFFF5855A),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(icon: Icon(Icons.home), onPressed: () {}),
-            IconButton(icon: Icon(Icons.folder), onPressed: () {})
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  icon: Icon(Icons.home),
+                  color: Color(0xFFF5855A),
+                  onPressed: () {}),
+              IconButton(
+                  icon: Icon(Icons.folder),
+                  color: Color(0xFFF5855A),
+                  onPressed: () {})
+            ],
+          ),
         ),
         shape: CircularNotchedRectangle(),
       ),
