@@ -30,13 +30,6 @@ class AddItem extends StatelessWidget {
 class _ItemForm extends StatefulWidget {
   _ItemForm({Key key}) : super(key: key);
 
-  final List<Map> fields = <Map>[
-    {'labelText': 'Name'},
-    {'labelText': 'Address', 'multiLine': true},
-    {'labelText': 'Phone Number'},
-    {'labelText': 'FSSAI Number'}
-  ];
-
   @override
   _ItemFormState createState() => _ItemFormState();
 }
@@ -79,6 +72,12 @@ class _ItemFormState extends State<_ItemForm> {
           TextFormField(
             cursorColor: Color(0xFFF5855A),
             decoration: decoration('Name'),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Name Required';
+              }
+              return null;
+            },
           ),
           Divider(color: Colors.transparent, height: 40),
           TextFormField(
@@ -97,10 +96,14 @@ class _ItemFormState extends State<_ItemForm> {
             decoration: decoration('FSSAI Number'),
           ),
           Divider(color: Colors.transparent, height: 40),
-          RaisedButton(
-            child: Text('Submit'),
+          ElevatedButton(
+            child: Icon(Icons.save),
             onPressed: () {
-              print('pressed');
+              if (_formKey.currentState.validate()) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(content: Text('Added Label')),
+                );
+              }
             },
           ),
         ],
