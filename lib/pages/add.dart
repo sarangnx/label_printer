@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:label_printer/models/company.dart';
 
 class AddItem extends StatelessWidget {
   AddItem({Key key}) : super(key: key);
@@ -37,6 +41,7 @@ class _ItemForm extends StatefulWidget {
 
 class _ItemFormState extends State<_ItemForm> {
   final _formKey = GlobalKey<FormState>();
+  Company _company = new Company();
 
   /// Create InputDecoration for form fields
   ///
@@ -85,26 +90,26 @@ class _ItemFormState extends State<_ItemForm> {
                 padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
                 children: [
                   TextFormField(
-                    cursorColor: Color(0xFFF5855A),
-                    decoration: decoration('Name'),
-                    validator: (val) => val.isEmpty ? 'Name Required' : null,
-                  ),
+                      cursorColor: Color(0xFFF5855A),
+                      decoration: decoration('Name'),
+                      validator: (val) => val.isEmpty ? 'Name Required' : null,
+                      onSaved: (val) => _company.name = val),
                   Divider(color: Colors.transparent, height: 40),
                   TextFormField(
-                    cursorColor: Color(0xFFF5855A),
-                    decoration: decoration('Address'),
-                    maxLines: 3,
-                  ),
+                      cursorColor: Color(0xFFF5855A),
+                      decoration: decoration('Address'),
+                      maxLines: 3,
+                      onSaved: (val) => _company.address = val),
                   Divider(color: Colors.transparent, height: 40),
                   TextFormField(
-                    cursorColor: Color(0xFFF5855A),
-                    decoration: decoration('Phone Number'),
-                  ),
+                      cursorColor: Color(0xFFF5855A),
+                      decoration: decoration('Phone Number'),
+                      onSaved: (val) => _company.phone = val),
                   Divider(color: Colors.transparent, height: 40),
                   TextFormField(
-                    cursorColor: Color(0xFFF5855A),
-                    decoration: decoration('FSSAI Number'),
-                  ),
+                      cursorColor: Color(0xFFF5855A),
+                      decoration: decoration('FSSAI Number'),
+                      onSaved: (val) => _company.fssai = val),
                 ],
               ),
             ),
@@ -112,18 +117,33 @@ class _ItemFormState extends State<_ItemForm> {
               padding: EdgeInsets.all(20),
               child: ElevatedButton(
                 child: Icon(Icons.save),
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('Added Label')),
-                    );
-                  }
-                },
+                onPressed: _addItem,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  _addItem() async {
+    final FormState form = _formKey.currentState;
+
+    if (!form.validate()) return;
+
+    // invoke onSave on all form elements
+    form.save();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> items = prefs.getStringList('companies') ?? <String>[];
+
+    // encode item to string, add it to item list and save to shared preferences
+    String item = jsonEncode(_company);
+    items.add(item);
+    prefs.setStringList('companies', items);
+
+    Scaffold.of(context).showSnackBar(
+      SnackBar(content: Text('Added Label')),
     );
   }
 }
