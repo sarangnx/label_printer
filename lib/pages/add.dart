@@ -6,6 +6,7 @@ class AddItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFFFFF2ED),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -76,46 +77,49 @@ class _ItemFormState extends State<_ItemForm> {
       child: Form(
         autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
-        child: ListView(
-          physics: NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              cursorColor: Color(0xFFF5855A),
-              decoration: decoration('Name'),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Name Required';
-                }
-                return null;
-              },
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+                children: [
+                  TextFormField(
+                    cursorColor: Color(0xFFF5855A),
+                    decoration: decoration('Name'),
+                    validator: (val) => val.isEmpty ? 'Name Required' : null,
+                  ),
+                  Divider(color: Colors.transparent, height: 40),
+                  TextFormField(
+                    cursorColor: Color(0xFFF5855A),
+                    decoration: decoration('Address'),
+                    maxLines: 3,
+                  ),
+                  Divider(color: Colors.transparent, height: 40),
+                  TextFormField(
+                    cursorColor: Color(0xFFF5855A),
+                    decoration: decoration('Phone Number'),
+                  ),
+                  Divider(color: Colors.transparent, height: 40),
+                  TextFormField(
+                    cursorColor: Color(0xFFF5855A),
+                    decoration: decoration('FSSAI Number'),
+                  ),
+                ],
+              ),
             ),
-            Divider(color: Colors.transparent, height: 40),
-            TextFormField(
-              cursorColor: Color(0xFFF5855A),
-              decoration: decoration('Address'),
-              maxLines: 3,
-            ),
-            Divider(color: Colors.transparent, height: 40),
-            TextFormField(
-              cursorColor: Color(0xFFF5855A),
-              decoration: decoration('Phone Number'),
-            ),
-            Divider(color: Colors.transparent, height: 40),
-            TextFormField(
-              cursorColor: Color(0xFFF5855A),
-              decoration: decoration('FSSAI Number'),
-            ),
-            Divider(color: Colors.transparent, height: 40),
-            ElevatedButton(
-              child: Icon(Icons.save),
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('Added Label')),
-                  );
-                }
-              },
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: ElevatedButton(
+                child: Icon(Icons.save),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('Added Label')),
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),
