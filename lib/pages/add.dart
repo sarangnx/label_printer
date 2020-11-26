@@ -74,6 +74,7 @@ class _ItemFormState extends State<_ItemForm> {
         }
       },
       child: Form(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
         child: ListView(
           physics: NeverScrollableScrollPhysics(),
