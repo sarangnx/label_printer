@@ -42,41 +42,68 @@ class _ItemForm extends StatefulWidget {
 }
 
 class _ItemFormState extends State<_ItemForm> {
+  final _formKey = GlobalKey<FormState>();
+
+  /// Create InputDecoration for form fields
+  ///
+  /// Takes [labelText] and creates InputDecoration for a form field
+  InputDecoration decoration(String labelText) {
+    return InputDecoration(
+      border: UnderlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.all(
+          Radius.circular(12.0),
+        ),
+      ),
+      contentPadding: EdgeInsets.fromLTRB(20, -10, 20, 10),
+      labelText: labelText,
+      labelStyle: TextStyle(
+        fontSize: 20,
+        color: Color(0xFFF5855A),
+        fontWeight: FontWeight.bold,
+      ),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      filled: true,
+      fillColor: Colors.white,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
-      child: ListView.separated(
+      key: _formKey,
+      child: ListView(
         physics: NeverScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
-        separatorBuilder: (BuildContext context, int index) => const Divider(
-          color: Colors.transparent,
-          height: 40,
-        ),
-        itemBuilder: (BuildContext context, int index) {
-          return TextField(
+        children: [
+          TextFormField(
             cursorColor: Color(0xFFF5855A),
-            decoration: InputDecoration(
-              border: UnderlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(12.0),
-                ),
-              ),
-              contentPadding: EdgeInsets.fromLTRB(20, -10, 20, 10),
-              labelText: widget.fields[index]['labelText'],
-              labelStyle: TextStyle(
-                fontSize: 20,
-                color: Color(0xFFF5855A),
-                fontWeight: FontWeight.bold,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            maxLines: widget.fields[index]['multiLine'] == true ? 3 : 1,
-          );
-        },
-        itemCount: widget.fields.length,
+            decoration: decoration('Name'),
+          ),
+          Divider(color: Colors.transparent, height: 40),
+          TextFormField(
+            cursorColor: Color(0xFFF5855A),
+            decoration: decoration('Address'),
+            maxLines: 3,
+          ),
+          Divider(color: Colors.transparent, height: 40),
+          TextFormField(
+            cursorColor: Color(0xFFF5855A),
+            decoration: decoration('Phone Number'),
+          ),
+          Divider(color: Colors.transparent, height: 40),
+          TextFormField(
+            cursorColor: Color(0xFFF5855A),
+            decoration: decoration('FSSAI Number'),
+          ),
+          Divider(color: Colors.transparent, height: 40),
+          RaisedButton(
+            child: Text('Submit'),
+            onPressed: () {
+              print('pressed');
+            },
+          ),
+        ],
       ),
     );
   }
