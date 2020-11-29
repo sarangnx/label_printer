@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'add.dart';
+import 'package:label_printer/models/company_model.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -9,18 +12,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  CompanyModel model = CompanyModel();
+
+  @override
+  void initState() {
+    model.loadData();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFFF2ED),
-      body: SafeArea(
-        top: true,
-        child: Center(
-          child: Text(
-            'Home',
-          ),
-        ),
-      ),
+      body: HomeBody(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -52,6 +57,25 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         shape: CircularNotchedRectangle(),
+      ),
+    );
+  }
+}
+
+class HomeBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: true,
+      child: Consumer<CompanyModel>(
+        builder: (context, model, child) => ListView.builder(
+          itemCount: model.companies.length,
+          itemBuilder: (context, index) {
+            return Card(
+              child: Text('${model.companies[index].name}'),
+            );
+          },
+        ),
       ),
     );
   }
