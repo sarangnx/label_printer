@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'package:label_printer/models/company.dart';
+import 'package:label_printer/models/company_model.dart';
 
 class AddItem extends StatelessWidget {
   AddItem({Key key}) : super(key: key);
@@ -134,13 +134,7 @@ class _ItemFormState extends State<_ItemForm> {
     // invoke onSave on all form elements
     form.save();
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> items = prefs.getStringList('companies') ?? <String>[];
-
-    // encode item to string, add it to item list and save to shared preferences
-    String item = jsonEncode(_company);
-    items.add(item);
-    prefs.setStringList('companies', items);
+    Provider.of<CompanyModel>(context, listen: false).add(_company);
 
     Scaffold.of(context).showSnackBar(
       SnackBar(content: Text('Added Label')),
