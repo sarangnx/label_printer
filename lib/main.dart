@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'pages/home.dart';
+import 'package:label_printer/models/company_model.dart';
 
 void main() {
-  runApp(App());
+  runApp(ChangeNotifierProvider<CompanyModel>(
+    create: (context) => CompanyModel(),
+    child: App(),
+  ));
 }
 
 class App extends StatelessWidget {
