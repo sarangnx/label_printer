@@ -67,16 +67,74 @@ class HomeBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       top: true,
-      child: Consumer<CompanyModel>(
-        builder: (context, model, child) => ListView.builder(
-          itemCount: model.companies.length,
-          itemBuilder: (context, index) {
-            return Card(
-              child: Text('${model.companies[index].name}'),
-            );
-          },
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              'Select a template',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFF5855A),
+              ),
+            ),
+            Divider(color: Colors.transparent, height: 50),
+            Consumer<CompanyModel>(
+              builder: (context, model, child) => model.companies.length > 0
+                  ? CompanyList(model: model)
+                  : EmptyPage(),
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class CompanyList extends StatelessWidget {
+  CompanyList({this.model});
+
+  final CompanyModel model;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: model.companies.length,
+      itemBuilder: (context, index) {
+        return Card(
+          color: Color(0xFFF5855A),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          ),
+          child: InkWell(
+            onTap: () {},
+            child: ListTile(
+              title: Text(
+                '${model.companies[index].name}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class EmptyPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('<empty>'),
     );
   }
 }
