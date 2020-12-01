@@ -228,6 +228,50 @@ class _InputFormState extends State<_InputForm> {
                       ),
                     ],
                   ),
+                  Divider(color: Colors.transparent, height: 40),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'MRP',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: TextFormField(
+                            cursorColor: Color(0xFFF5855A),
+                            decoration: decoration(),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(color: Colors.transparent, height: 40),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Copies',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: TextFormField(
+                            cursorColor: Color(0xFFF5855A),
+                            decoration: decoration(),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
