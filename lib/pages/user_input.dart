@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 import 'package:label_printer/models/company.dart';
@@ -44,6 +46,9 @@ class _InputFormState extends State<_InputForm> {
 
   String quantityType = 'Weight';
   String dateType = 'Date';
+  String date;
+
+  TextEditingController _date = new TextEditingController();
 
   /// Create InputDecoration for form fields
   ///
@@ -68,6 +73,20 @@ class _InputFormState extends State<_InputForm> {
     );
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null)
+      setState(() {
+        date = DateFormat('d MMMM y').format(picked);
+        _date.value = TextEditingValue(text: date);
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -90,25 +109,31 @@ class _InputFormState extends State<_InputForm> {
                 children: [
                   Row(
                     children: [
-                      Flexible(
-                        child: DropdownButtonFormField(
-                          decoration: decoration(),
-                          value: quantityType,
-                          items: [
-                            DropdownMenuItem(
-                              child: Text('Weight'),
-                              value: 'Weight',
-                            ),
-                            DropdownMenuItem(
-                              child: Text('Count'),
-                              value: 'Count',
-                            )
-                          ],
-                          onChanged: (val) {
-                            setState(() {
-                              quantityType = val;
-                            });
-                          },
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            value: quantityType,
+                            items: [
+                              DropdownMenuItem(
+                                child: Text('Weight'),
+                                value: 'Weight',
+                              ),
+                              DropdownMenuItem(
+                                child: Text('Count'),
+                                value: 'Count',
+                              )
+                            ],
+                            onChanged: (val) {
+                              setState(() {
+                                quantityType = val;
+                              });
+                            },
+                          ),
                         ),
                       ),
                       Flexible(
@@ -125,33 +150,48 @@ class _InputFormState extends State<_InputForm> {
                   Divider(color: Colors.transparent, height: 40),
                   Row(
                     children: [
-                      Flexible(
-                        child: DropdownButtonFormField(
-                          decoration: decoration(),
-                          value: dateType,
-                          items: [
-                            DropdownMenuItem(
-                              child: Text('Date'),
-                              value: 'Date',
-                            ),
-                            DropdownMenuItem(
-                              child: Text('Expiry Date'),
-                              value: 'Expiry Date',
-                            )
-                          ],
-                          onChanged: (val) {
-                            setState(() {
-                              dateType = val;
-                            });
-                          },
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            // decoration: decoration(),
+                            value: dateType,
+                            items: [
+                              DropdownMenuItem(
+                                child: Text('Date'),
+                                value: 'Date',
+                              ),
+                              DropdownMenuItem(
+                                child: Text('Expiry Date'),
+                                value: 'Expiry Date',
+                              )
+                            ],
+                            onChanged: (val) {
+                              setState(() {
+                                dateType = val;
+                              });
+                            },
+                          ),
                         ),
                       ),
                       Flexible(
                         child: Padding(
                           padding: EdgeInsets.only(left: 10),
-                          child: TextFormField(
-                            cursorColor: Color(0xFFF5855A),
-                            decoration: decoration(),
+                          child: GestureDetector(
+                            onTap: () {
+                              _selectDate(context);
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _date,
+                                cursorColor: Color(0xFFF5855A),
+                                decoration: decoration(),
+                              ),
+                            ),
                           ),
                         ),
                       ),
