@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'pages/home.dart';
 import 'package:label_printer/models/company_model.dart';
+import 'package:label_printer/router.dart' as router;
 
 void main() {
   runApp(ChangeNotifierProvider<CompanyModel>(
@@ -20,7 +20,8 @@ class App extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      onGenerateRoute: router.generateRoute,
+      initialRoute: '/',
     );
   }
 }

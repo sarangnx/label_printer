@@ -29,10 +29,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddItem()),
-          );
+          Navigator.pushNamed(context, '/add');
         },
         child: Icon(Icons.add),
         elevation: 2.0,
