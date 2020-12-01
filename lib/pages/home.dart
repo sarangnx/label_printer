@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'add.dart';
 import 'package:label_printer/models/company_model.dart';
 
 class HomePage extends StatefulWidget {
@@ -109,7 +108,13 @@ class CompanyList extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(15.0)),
           ),
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/input',
+                arguments: model.companies[index],
+              );
+            },
             child: ListTile(
               title: Text(
                 '${model.companies[index].name}',
