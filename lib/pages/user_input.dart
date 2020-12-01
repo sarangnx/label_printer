@@ -46,7 +46,8 @@ class _InputFormState extends State<_InputForm> {
 
   String quantityType = 'Weight';
   String dateType = 'Date';
-  String date;
+  DateTime dateTime;
+  bool _showDate = true;
 
   TextEditingController _date = new TextEditingController();
 
@@ -82,8 +83,10 @@ class _InputFormState extends State<_InputForm> {
     );
     if (picked != null)
       setState(() {
-        date = DateFormat('d MMMM y').format(picked);
-        _date.value = TextEditingValue(text: date);
+        dateTime = picked;
+        _date.value = TextEditingValue(
+          text: DateFormat(_showDate ? 'd MMMM y' : 'MMMM y').format(picked),
+        );
       });
   }
 
@@ -180,7 +183,7 @@ class _InputFormState extends State<_InputForm> {
                       ),
                       Flexible(
                         child: Padding(
-                          padding: EdgeInsets.only(left: 10),
+                          padding: EdgeInsets.symmetric(horizontal: 10),
                           child: GestureDetector(
                             onTap: () {
                               _selectDate(context);
@@ -192,6 +195,34 @@ class _InputFormState extends State<_InputForm> {
                                 decoration: decoration(),
                               ),
                             ),
+                          ),
+                        ),
+                      ),
+                      FlatButton(
+                        color: Colors.orange,
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        minWidth: 55,
+                        child: Icon(
+                          _showDate ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showDate = !_showDate;
+
+                            // change date controller value
+                            if (dateTime != null) {
+                              _date.value = TextEditingValue(
+                                text: DateFormat(
+                                  _showDate ? 'd MMMM y' : 'MMMM y',
+                                ).format(dateTime),
+                              );
+                            }
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12.0),
                           ),
                         ),
                       ),
