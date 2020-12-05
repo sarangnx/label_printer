@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.0
-  shared_preferences: ^0.5.12+4
   provider: ^4.3.2+2
   flutter_usb_write: ^0.1.0
+  path_provider: ^1.6.24
 
 dev_dependencies:
   flutter_test:
