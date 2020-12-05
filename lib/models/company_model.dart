@@ -1,7 +1,8 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:label_printer/models/company.dart';
 
@@ -15,29 +16,48 @@ class CompanyModel extends ChangeNotifier {
   void add(Company company) async {
     _companies.add(company);
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> items = prefs.getStringList('companies') ?? <String>[];
+    File file = await openFile();
+    String contents = await file.readAsString();
 
-    // encode item to string, add it to item list and save to shared preferences
-    String item = jsonEncode(company);
-    items.add(item);
-    await prefs.setStringList('companies', items);
+    List<dynamic> companies = contents != '' ? jsonDecode(contents) : [];
+
+    Map<String, dynamic> item = company.toJson();
+    companies.add(item);
+
+    contents = jsonEncode(companies);
+    await file.writeAsString(contents);
 
     notifyListeners();
   }
 
   /// load data from localstorage
   void loadData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> companies = prefs.getStringList('companies') ?? <String>[];
+    File file = await openFile();
+    String contents = await file.readAsString();
+    print(contents);
 
-    for (var companyString in companies) {
-      Map<String, dynamic> companyJSON = jsonDecode(companyString);
-      Company company = Company.fromJson(companyJSON);
+    List<dynamic> companies = contents != '' ? jsonDecode(contents) : [];
+
+    for (var comp in companies) {
+      Company company = Company.fromJson(comp);
 
       _companies.add(company);
     }
 
     notifyListeners();
+  }
+
+  // open file for read/write
+  Future<File> openFile() async {
+    final folder = await getApplicationDocumentsDirectory();
+    String path = folder.path;
+
+    if (!await File('$path/companies.json').exists()) {
+      await File('$path/companies.json').create();
+    }
+
+    File file = File('$path/companies.json');
+
+    return file;
   }
 }
