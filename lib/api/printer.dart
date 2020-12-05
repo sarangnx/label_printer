@@ -48,7 +48,7 @@ class Printer {
     int my = 1,
   }) async {
     await sendCommand(
-      'TEXT ${x}, ${y}, "${font}", 0, ${mx} , ${my}, "${text}" \r\n',
+      'TEXT $x, $y, "$font", 0, $mx , $my, "$text" \r\n',
     );
   }
 
@@ -142,7 +142,10 @@ class Printer {
       'BLOCK 640, 190, 160, 50, "0", 0, 6, 5, "MFD BY: ${data['address']}" \r\n',
     );
 
-    await sendCommand('PRINT 1\r\n');
+    int copies = int.tryParse(data['copies']) ?? 1;
+    copies = (copies / 2).ceil();
+
+    await sendCommand('PRINT $copies\r\n');
 
     await dispose();
   }
