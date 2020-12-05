@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 import 'package:label_printer/models/company.dart';
+import 'package:label_printer/api/printer.dart';
 
 class UserInput extends StatelessWidget {
   final Company company;
@@ -29,13 +30,15 @@ class UserInput extends StatelessWidget {
           style: TextStyle(color: Color(0xFFF5855A)),
         ),
       ),
-      body: _InputForm(),
+      body: _InputForm(company: company),
     );
   }
 }
 
 class _InputForm extends StatefulWidget {
-  _InputForm({Key key}) : super(key: key);
+  _InputForm({Key key, this.company}) : super(key: key);
+
+  final Company company;
 
   @override
   _InputFormState createState() => _InputFormState();
@@ -43,6 +46,7 @@ class _InputForm extends StatefulWidget {
 
 class _InputFormState extends State<_InputForm> {
   final _formKey = GlobalKey<FormState>();
+  Printer _printer = Printer();
 
   String quantityType = 'Weight';
   String dateType = 'Date';
@@ -50,6 +54,9 @@ class _InputFormState extends State<_InputForm> {
   bool _showDate = true;
 
   TextEditingController _date = new TextEditingController();
+  TextEditingController _quantity = new TextEditingController();
+  TextEditingController _mrp = new TextEditingController();
+  TextEditingController _copies = new TextEditingController();
 
   /// Create InputDecoration for form fields
   ///
@@ -145,6 +152,7 @@ class _InputFormState extends State<_InputForm> {
                           child: TextFormField(
                             cursorColor: Color(0xFFF5855A),
                             decoration: decoration(),
+                            controller: _quantity,
                           ),
                         ),
                       ),
@@ -242,6 +250,7 @@ class _InputFormState extends State<_InputForm> {
                         child: Padding(
                           padding: EdgeInsets.only(left: 10),
                           child: TextFormField(
+                            controller: _mrp,
                             cursorColor: Color(0xFFF5855A),
                             decoration: decoration(),
                             keyboardType: TextInputType.number,
@@ -264,6 +273,7 @@ class _InputFormState extends State<_InputForm> {
                         child: Padding(
                           padding: EdgeInsets.only(left: 10),
                           child: TextFormField(
+                            controller: _copies,
                             cursorColor: Color(0xFFF5855A),
                             decoration: decoration(),
                             keyboardType: TextInputType.number,
@@ -296,7 +306,23 @@ class _InputFormState extends State<_InputForm> {
                     Icon(Icons.print),
                   ],
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  Map<String, dynamic> data = {
+                    'quantityType': quantityType,
+                    'quantity': _quantity.text,
+                    'dateType': dateType,
+                    'date': _date.text,
+                    'mrp': _mrp.text,
+                    'copies': _copies.text,
+                    'name': widget.company.name,
+                    'address': widget.company.address,
+                    'fssai': widget.company.fssai,
+                    'phone': widget.company.phone,
+                  };
+
+                  await _printer.init();
+                  await _printer.printLabel(data);
+                },
               ),
             ),
           ],
