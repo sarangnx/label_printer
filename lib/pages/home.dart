@@ -15,9 +15,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    model.loadData();
-
     super.initState();
+    Provider.of<CompanyModel>(context, listen: false).loadData();
   }
 
   @override
@@ -42,13 +41,15 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                  icon: Icon(Icons.home),
-                  color: Color(0xFFF5855A),
-                  onPressed: () {}),
+                icon: Icon(Icons.home),
+                color: Color(0xFFF5855A),
+                onPressed: () {},
+              ),
               IconButton(
-                  icon: Icon(Icons.folder),
-                  color: Color(0xFFF5855A),
-                  onPressed: () {})
+                icon: Icon(Icons.folder),
+                color: Color(0xFFF5855A),
+                onPressed: () {},
+              )
             ],
           ),
         ),
