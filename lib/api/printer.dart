@@ -99,48 +99,54 @@ class Printer {
     await text(text: data['mrp'], x: 490, y: 142, font: 'D.FNT');
 
     // Phone
-    await text(
-      text: 'Customer Care: ${data['phone']}',
-      x: 30,
-      y: 200,
-      font: '0',
-      mx: 6,
-      my: 5,
-    );
-    await text(
-      text: 'Customer Care: ${data['phone']}',
-      x: 430,
-      y: 200,
-      font: '0',
-      mx: 6,
-      my: 5,
-    );
+    if (data['phone'] != null && data['phone'] != '') {
+      await text(
+        text: 'Customer Care: ${data['phone']}',
+        x: 30,
+        y: 200,
+        font: '0',
+        mx: 6,
+        my: 5,
+      );
+      await text(
+        text: 'Customer Care: ${data['phone']}',
+        x: 430,
+        y: 200,
+        font: '0',
+        mx: 6,
+        my: 5,
+      );
+    }
 
     // Fssai
-    await text(
-      text: 'fssai: ${data['fssai']}',
-      x: 30,
-      y: 220,
-      font: '0',
-      mx: 6,
-      my: 5,
-    );
-    await text(
-      text: 'fssai: ${data['fssai']}',
-      x: 430,
-      y: 220,
-      font: '0',
-      mx: 6,
-      my: 5,
-    );
+    if (data['fssai'] != null && data['fssai'] != '') {
+      await text(
+        text: 'fssai: ${data['fssai']}',
+        x: 30,
+        y: 220,
+        font: '0',
+        mx: 6,
+        my: 5,
+      );
+      await text(
+        text: 'fssai: ${data['fssai']}',
+        x: 430,
+        y: 220,
+        font: '0',
+        mx: 6,
+        my: 5,
+      );
+    }
 
     // address
-    await sendCommand(
-      'BLOCK 240, 190, 160, 50, "0", 0, 6, 5, "MFD BY: ${data['address']}" \r\n',
-    );
-    await sendCommand(
-      'BLOCK 640, 190, 160, 50, "0", 0, 6, 5, "MFD BY: ${data['address']}" \r\n',
-    );
+    if (data['address'] != null && data['address'] != '') {
+      await sendCommand(
+        'BLOCK 240, 190, 160, 50, "0", 0, 6, 5, "MFD BY: ${data['address']}" \r\n',
+      );
+      await sendCommand(
+        'BLOCK 640, 190, 160, 50, "0", 0, 6, 5, "MFD BY: ${data['address']}" \r\n',
+      );
+    }
 
     int copies = int.tryParse(data['copies']) ?? 1;
     copies = (copies / 2).ceil();
