@@ -34,7 +34,6 @@ class CompanyModel extends ChangeNotifier {
   void loadData() async {
     File file = await openFile();
     String contents = await file.readAsString();
-    print(contents);
 
     List<dynamic> companies = contents != '' ? jsonDecode(contents) : [];
 
@@ -49,7 +48,7 @@ class CompanyModel extends ChangeNotifier {
 
   // open file for read/write
   Future<File> openFile() async {
-    final folder = await getApplicationDocumentsDirectory();
+    final folder = await getExternalStorageDirectory();
     String path = folder.path;
 
     if (!await File('$path/companies.json').exists()) {
