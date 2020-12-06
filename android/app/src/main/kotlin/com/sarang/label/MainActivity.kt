@@ -1,4 +1,4 @@
-package com.example.label_printer
+package com.sarang.label
 
 import io.flutter.embedding.android.FlutterActivity
 
