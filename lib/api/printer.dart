@@ -124,6 +124,13 @@ class Printer {
     await text(text: data['mrp'], x: 90, y: 142 + padding, font: 'D.FNT');
     await text(text: data['mrp'], x: 490, y: 142 + padding, font: 'D.FNT');
 
+    // Best before
+    if (data['bestBefore'] != null) {
+      var message = 'Best before ${data['bestBefore']}';
+      await text(text: message, x: 30, y: 170 + padding, font: 'D.FNT');
+      await text(text: message, x: 430, y: 170 + padding, font: 'D.FNT');
+    }
+
     // Phone
     if (data['phone'] != null && data['phone'] != '') {
       await text(

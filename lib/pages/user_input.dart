@@ -436,6 +436,7 @@ class _InputFormState extends State<_InputForm> {
                     'address': widget.company.address,
                     'fssai': widget.company.fssai,
                     'phone': widget.company.phone,
+                    'bestBefore': _showBestBefore ? _bestBefore.text : null
                   };
 
                   await _printer.init();
