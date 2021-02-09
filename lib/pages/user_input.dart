@@ -54,12 +54,14 @@ class _InputFormState extends State<_InputForm> {
   bool _showDate = true;
   // for showing second date
   bool _showSecondDate = false;
+  bool _showBestBefore = false;
 
   TextEditingController _date = new TextEditingController();
   TextEditingController _date2 = new TextEditingController();
   TextEditingController _quantity = new TextEditingController();
   TextEditingController _mrp = new TextEditingController();
   TextEditingController _copies = new TextEditingController();
+  TextEditingController _bestBefore = new TextEditingController(text: '45 days');
 
   /// Create InputDecoration for form fields
   ///
@@ -271,8 +273,7 @@ class _InputFormState extends State<_InputForm> {
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
                           'Show secondary date',
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal, fontSize: 16),
+                          style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
                         ),
                       ),
                     ],
@@ -354,6 +355,49 @@ class _InputFormState extends State<_InputForm> {
                       ),
                     ],
                   ),
+                  Divider(color: Colors.transparent, height: 40),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _showBestBefore,
+                        onChanged: (value) {
+                          setState(() {
+                            _showBestBefore = value;
+                          });
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Show Best Before',
+                          style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_showBestBefore)
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'Best Before',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Flexible(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: TextFormField(
+                              controller: _bestBefore,
+                              cursorColor: Color(0xFFF5855A),
+                              decoration: decoration(),
+                              keyboardType: TextInputType.text,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
