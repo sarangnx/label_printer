@@ -23,3 +23,13 @@ adb tcpip <port>
 # disconnect usb and type this in terminal
 adb connect <ip of device>:<port>
 ```
+
+# Building Release APK
+
+```bash
+# to get different apk for different cpu
+flutter build apk --split-per-abi
+
+# to get single apk
+flutter build apk
+```
