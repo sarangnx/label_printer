@@ -52,6 +52,7 @@ class _InputFormState extends State<_InputForm> {
   String dateType = 'Date';
   DateTime dateTime;
   bool _showDate = true;
+  bool _showSecondDate = false;
 
   TextEditingController _date = new TextEditingController();
   TextEditingController _quantity = new TextEditingController();
@@ -232,6 +233,27 @@ class _InputFormState extends State<_InputForm> {
                           borderRadius: BorderRadius.all(
                             Radius.circular(12.0),
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(color: Colors.transparent, height: 40),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _showSecondDate,
+                        onChanged: (value) {
+                          setState(() {
+                            _showSecondDate = value;
+                          });
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Show secondary date',
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal, fontSize: 16),
                         ),
                       ),
                     ],
