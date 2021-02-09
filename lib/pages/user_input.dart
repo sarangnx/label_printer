@@ -384,6 +384,8 @@ class _InputFormState extends State<_InputForm> {
                     'quantity': _quantity.text,
                     'dateType': dateType,
                     'date': _date.text,
+                    'showDate2': _showSecondDate,
+                    'date2': _date2.text,
                     'mrp': _mrp.text,
                     'copies': _copies.text,
                     'name': widget.company.name,
