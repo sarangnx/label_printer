@@ -82,21 +82,54 @@ class Printer {
       await text(text: data['date'], x: 600, y: 82, font: 'D.FNT');
     }
 
+    var padding = 0;
+
+    // Date 2
+    if (data['showDate2']) {
+      // If date2 is needed, shift everything down by 30
+      padding = 30;
+
+      // Date Type
+      await text(text: 'Expiry Date:', x: 30, y: 110, font: '3.EFT');
+      await text(text: 'Expiry Date:', x: 430, y: 110, font: '3.EFT');
+
+      // Date Value
+      await text(text: data['date'], x: 200, y: 112, font: 'D.FNT');
+      await text(text: data['date'], x: 600, y: 112, font: 'D.FNT');
+    }
+
     // Quantity Type
-    await text(text: '${data['quantityType']}:', x: 30, y: 110, font: '3.EFT');
-    await text(text: '${data['quantityType']}:', x: 430, y: 110, font: '3.EFT');
+    await text(
+      text: '${data['quantityType']}:',
+      x: 30,
+      y: 110 + padding,
+      font: '3.EFT',
+    );
+    await text(
+      text: '${data['quantityType']}:',
+      x: 430,
+      y: 110 + padding,
+      font: '3.EFT',
+    );
 
     // Quantity
-    await text(text: data['quantity'], x: 130, y: 112, font: 'D.FNT');
-    await text(text: data['quantity'], x: 530, y: 112, font: 'D.FNT');
+    await text(text: data['quantity'], x: 130, y: 112 + padding, font: 'D.FNT');
+    await text(text: data['quantity'], x: 530, y: 112 + padding, font: 'D.FNT');
 
     // MRP Label
-    await text(text: 'MRP:', x: 30, y: 140, font: '3.EFT');
-    await text(text: 'MRP:', x: 430, y: 140, font: '3.EFT');
+    await text(text: 'MRP:', x: 30, y: 140 + padding, font: '3.EFT');
+    await text(text: 'MRP:', x: 430, y: 140 + padding, font: '3.EFT');
 
     // MRP
-    await text(text: data['mrp'], x: 90, y: 142, font: 'D.FNT');
-    await text(text: data['mrp'], x: 490, y: 142, font: 'D.FNT');
+    await text(text: data['mrp'], x: 90, y: 142 + padding, font: 'D.FNT');
+    await text(text: data['mrp'], x: 490, y: 142 + padding, font: 'D.FNT');
+
+    // Best before
+    if (data['bestBefore'] != null) {
+      var message = 'Best before ${data['bestBefore']}';
+      await text(text: message, x: 30, y: 170 + padding, font: 'D.FNT');
+      await text(text: message, x: 430, y: 170 + padding, font: 'D.FNT');
+    }
 
     // Phone
     if (data['phone'] != null && data['phone'] != '') {

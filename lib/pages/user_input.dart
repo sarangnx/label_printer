@@ -13,7 +13,7 @@ class UserInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: Color(0xFFFFF2ED),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -52,11 +52,16 @@ class _InputFormState extends State<_InputForm> {
   String dateType = 'Date';
   DateTime dateTime;
   bool _showDate = true;
+  // for showing second date
+  bool _showSecondDate = false;
+  bool _showBestBefore = false;
 
   TextEditingController _date = new TextEditingController();
+  TextEditingController _date2 = new TextEditingController();
   TextEditingController _quantity = new TextEditingController();
   TextEditingController _mrp = new TextEditingController();
   TextEditingController _copies = new TextEditingController();
+  TextEditingController _bestBefore = new TextEditingController(text: '45 days');
 
   /// Create InputDecoration for form fields
   ///
@@ -81,6 +86,7 @@ class _InputFormState extends State<_InputForm> {
     );
   }
 
+  // Date picker for first date field
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -93,6 +99,22 @@ class _InputFormState extends State<_InputForm> {
         dateTime = picked;
         _date.value = TextEditingValue(
           text: DateFormat(_showDate ? 'd MMMM y' : 'MMMM y').format(picked),
+        );
+      });
+  }
+
+  // Date picker for second date
+  Future<void> _selectDate2(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null)
+      setState(() {
+        _date2.value = TextEditingValue(
+          text: DateFormat('d MMMM y').format(picked),
         );
       });
   }
@@ -239,6 +261,57 @@ class _InputFormState extends State<_InputForm> {
                   Divider(color: Colors.transparent, height: 40),
                   Row(
                     children: [
+                      Checkbox(
+                        value: _showSecondDate,
+                        onChanged: (value) {
+                          setState(() {
+                            _showSecondDate = value;
+                          });
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Show secondary date',
+                          style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(color: Colors.transparent, height: 40),
+                  if (_showSecondDate) ...[
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'Expiry Date',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Flexible(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: GestureDetector(
+                              onTap: () {
+                                _selectDate2(context);
+                              },
+                              child: AbsorbPointer(
+                                child: TextFormField(
+                                  controller: _date2,
+                                  cursorColor: Color(0xFFF5855A),
+                                  decoration: decoration(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(color: Colors.transparent, height: 40)
+                  ],
+                  Row(
+                    children: [
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
@@ -282,6 +355,49 @@ class _InputFormState extends State<_InputForm> {
                       ),
                     ],
                   ),
+                  Divider(color: Colors.transparent, height: 40),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _showBestBefore,
+                        onChanged: (value) {
+                          setState(() {
+                            _showBestBefore = value;
+                          });
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Show Best Before',
+                          style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_showBestBefore)
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'Best Before',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Flexible(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: TextFormField(
+                              controller: _bestBefore,
+                              cursorColor: Color(0xFFF5855A),
+                              decoration: decoration(),
+                              keyboardType: TextInputType.text,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -312,12 +428,15 @@ class _InputFormState extends State<_InputForm> {
                     'quantity': _quantity.text,
                     'dateType': dateType,
                     'date': _date.text,
+                    'showDate2': _showSecondDate,
+                    'date2': _date2.text,
                     'mrp': _mrp.text,
                     'copies': _copies.text,
                     'name': widget.company.name,
                     'address': widget.company.address,
                     'fssai': widget.company.fssai,
                     'phone': widget.company.phone,
+                    'bestBefore': _showBestBefore ? _bestBefore.text : null
                   };
 
                   await _printer.init();

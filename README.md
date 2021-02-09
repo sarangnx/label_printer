@@ -1,16 +1,35 @@
 # label_printer
 
-A new Flutter project.
+Flutter app for printing labels on ESC/POS thermal printer. Model: TSC TE200
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+```bash
+# install dependencies
+flutter packages get
 
-A few resources to get you started if this is your first Flutter project:
+# check for connected deviecs
+flutter devices
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Connecting device over wifi
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[Connect adb over network.](https://stackoverflow.com/questions/2604727/how-can-i-connect-to-android-with-adb-over-tcp)
+
+```bash
+# first connect with usb
+adb tcpip <port>
+
+# disconnect usb and type this in terminal
+adb connect <ip of device>:<port>
+```
+
+# Building Release APK
+
+```bash
+# to get different apk for different cpu
+flutter build apk --split-per-abi
+
+# to get single apk
+flutter build apk
+```
