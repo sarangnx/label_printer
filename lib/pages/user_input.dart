@@ -13,7 +13,7 @@ class UserInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: Color(0xFFFFF2ED),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
