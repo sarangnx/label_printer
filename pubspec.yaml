@@ -2,7 +2,7 @@ name: label_printer
 description: Flutter App for TSC200 Series Label Printer.
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.1.0
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
