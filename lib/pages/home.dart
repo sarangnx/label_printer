@@ -1,48 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/company_model.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  CompanyModel model = CompanyModel();
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<CompanyModel>(context, listen: false).loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: const HomeBody());
+    return Scaffold(appBar: AppBar(title: const Text('Select Label Template')), body: const HomeBody());
   }
 }
 
 class HomeBody extends StatelessWidget {
-  const HomeBody({Key? key}) : super(key: key);
+  const HomeBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Select Label Template')),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        children: List.filled(
-          20,
-          GestureDetector(
-            onTap: () {
-              // Handle click for Template 1
-              debugPrint('Template 1 clicked');
+    return SafeArea(
+      child: Consumer<CompanyModel>(
+        builder: (context, model, child) {
+          if (model.companies.isEmpty) return EmptyPage();
+
+          return ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: model.companies.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Card(
+                  elevation: 0.1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: const BorderSide(width: 0.1),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      // Navigator.pushNamed(context, '/input', arguments: model.companies[index]);
+                      debugPrint('Template 1 clicked');
+                    },
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      trailing: const Icon(Icons.arrow_circle_right),
+                      title: Text(model.companies[index].name),
+                      subtitle: Text(model.companies[index].address, overflow: TextOverflow.ellipsis, maxLines: 1),
+                    ),
+                  ),
+                ),
+              );
             },
-            child: Card(
-              elevation: 0,
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(width: 0.3)),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                trailing: const Icon(Icons.arrow_circle_right),
-                title: Text('Royal Foods'),
-              ),
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
+  }
+}
+
+class EmptyPage extends StatelessWidget {
+  const EmptyPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('<empty>'));
   }
 }
