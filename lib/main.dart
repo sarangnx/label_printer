@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'models/company_model.dart';
 import 'router.dart' as router;
 import 'theme/app_theme.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(ChangeNotifierProvider<CompanyModel>(create: (context) => CompanyModel(), child: App()));
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Label Printer',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      // TODO: Add a theme switcher
       themeMode: ThemeMode.light,
       onGenerateRoute: router.generateRoute,
       initialRoute: '/',
