@@ -50,12 +50,15 @@ class HomeBody extends StatelessWidget {
                   ),
                   child: InkWell(
                     onTap: () {
-                      // Navigator.pushNamed(context, '/input', arguments: model.companies[index]);
-                      debugPrint('Template 1 clicked');
+                      Navigator.pushNamed(context, '/print', arguments: model.companies[index]);
                     },
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      trailing: const Icon(Icons.arrow_circle_right),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      leading: CircleAvatar(
+                        radius: 20, // Size of the avatar
+                        child: Text(model.companies[index].name[0]), // Display initials or text
+                      ),
+                      // trailing: const Icon(Icons.arrow_circle_right),
                       title: Text(model.companies[index].name),
                       subtitle: Text(model.companies[index].address, overflow: TextOverflow.ellipsis, maxLines: 1),
                     ),
