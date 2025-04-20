@@ -48,6 +48,7 @@ class PrinterForm extends State<_PrintForm> {
   DateTime? _mfgDateTime = DateTime.now();
   DateTime? _expiryDateTime = DateTime.now().add(Duration(days: 45));
   bool _showExpiryDate = false;
+  bool _showMonthOnly = false;
 
   final TextEditingController _productName = TextEditingController();
   final TextEditingController _quantity = TextEditingController();
@@ -72,7 +73,7 @@ class PrinterForm extends State<_PrintForm> {
     if (picked != null) {
       setState(() {
         _mfgDateTime = picked;
-        _mfgDate.value = TextEditingValue(text: DateFormat('d MMMM y').format(picked));
+        _mfgDate.value = TextEditingValue(text: DateFormat(_showMonthOnly ? 'MMMM y' : 'd MMMM y').format(picked));
       });
     }
   }
@@ -241,7 +242,7 @@ class PrinterForm extends State<_PrintForm> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 8,
-                children: [Text('Dates', style: Theme.of(context).textTheme.titleMedium)],
+                children: [Text('Dates', style: Theme.of(context).textTheme.headlineSmall)],
               ),
             ),
 
@@ -251,7 +252,43 @@ class PrinterForm extends State<_PrintForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 8,
                 children: [
-                  Text('MFG Date', style: Theme.of(context).textTheme.labelLarge),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    spacing: 8,
+                    children: [
+                      Text('MFG Date', style: Theme.of(context).textTheme.labelLarge),
+                      SegmentedButton<bool>(
+                        multiSelectionEnabled: false,
+                        emptySelectionAllowed: true,
+                        style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact),
+                        segments: const [ButtonSegment(value: true, label: Text('Month Only'))],
+                        selected: {_showMonthOnly},
+                        onSelectionChanged: (Set<bool> newSelection) {
+                          setState(() {
+                            if (newSelection.isEmpty) {
+                              _showMonthOnly = false;
+
+                              if (_mfgDateTime != null && _mfgDate.text.isNotEmpty) {
+                                setState(() {
+                                  _mfgDate.value = TextEditingValue(
+                                    text: DateFormat('dd MMMM y').format(_mfgDateTime!),
+                                  );
+                                });
+                              }
+                            } else {
+                              _showMonthOnly = newSelection.first;
+
+                              if (_mfgDateTime != null && _mfgDate.text.isNotEmpty) {
+                                setState(() {
+                                  _mfgDate.value = TextEditingValue(text: DateFormat('MMMM y').format(_mfgDateTime!));
+                                });
+                              }
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                   Row(
                     children: [
                       Expanded(
