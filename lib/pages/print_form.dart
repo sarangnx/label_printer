@@ -44,25 +44,25 @@ class PrinterForm extends State<_PrintForm> {
   String _quantityType = 'Weight';
   String? _selectedUnit = 'g';
   DateTime? _mfgDateTime = DateTime.now();
+  DateTime? _expiryDateTime = DateTime.now().add(Duration(days: 45));
+  bool _showExpiryDate = false;
 
   final TextEditingController _productName = TextEditingController();
   final TextEditingController _quantity = TextEditingController();
   final TextEditingController _mrp = TextEditingController();
   final TextEditingController _mfgDate = TextEditingController();
+  final TextEditingController _expiryDate = TextEditingController();
 
   final FocusNode _productNameFocus = FocusNode();
-  final FocusNode _quantityFocus = FocusNode();
   final FocusNode _mrpFocus = FocusNode();
-  final FocusNode _mfgDateFocus = FocusNode();
 
   // Date picker for first date field
   Future<void> _selectMfgDate(BuildContext context) async {
-    // FocusScope.of(context).unfocus();
     FocusScope.of(context).requestFocus(FocusNode());
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _mfgDateTime ?? DateTime.now(),
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2101),
     );
@@ -71,6 +71,24 @@ class PrinterForm extends State<_PrintForm> {
       setState(() {
         _mfgDateTime = picked;
         _mfgDate.value = TextEditingValue(text: DateFormat('d MMMM y').format(picked));
+      });
+    }
+  }
+
+  Future<void> _selectExpiryDate(BuildContext context) async {
+    FocusScope.of(context).requestFocus(FocusNode());
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _expiryDateTime ?? DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _expiryDateTime = picked;
+        _expiryDate.value = TextEditingValue(text: DateFormat('d MMMM y').format(picked));
       });
     }
   }
@@ -244,11 +262,7 @@ class PrinterForm extends State<_PrintForm> {
                             _selectMfgDate(context);
                           },
                           child: AbsorbPointer(
-                            child: TextFormField(
-                              focusNode: _mfgDateFocus,
-                              onChanged: (value) => setState(() {}),
-                              controller: _mfgDate,
-                            ),
+                            child: TextFormField(onChanged: (value) => setState(() {}), controller: _mfgDate),
                           ),
                         ),
                       ),
@@ -262,6 +276,87 @@ class PrinterForm extends State<_PrintForm> {
                         },
                       ),
                     ],
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: _showExpiryDate,
+                    onChanged: (value) {
+                      setState(() {
+                        _showExpiryDate = value!;
+                      });
+                    },
+                  ),
+                  Text('Show expiry date'),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 8,
+                children: [
+                  Text('Expiry Date', style: Theme.of(context).textTheme.labelLarge),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _selectExpiryDate(context);
+                          },
+                          child: AbsorbPointer(
+                            child: TextFormField(onChanged: (value) => setState(() {}), controller: _expiryDate),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _expiryDate.clear(); // Clear the date
+                            _expiryDateTime = null; // Reset the selected date
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: FilledButton(
+                      style: Theme.of(context).filledButtonTheme.style!.copyWith(
+                        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16)),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          // Handle the print action here
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 10,
+                        children: [
+                          const Text('Print Label', style: TextStyle(fontSize: 16)),
+                          Icon(Icons.print, size: 20),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
