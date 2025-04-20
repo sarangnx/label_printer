@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:label_printer/models/company.dart';
 
 class PrintFormPage extends StatelessWidget {
@@ -11,7 +12,7 @@ class PrintFormPage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
-        debugPrint('touched');
+
         // This is used to dismiss the keyboard when tapping outside of a text field
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
@@ -42,14 +43,37 @@ class PrinterForm extends State<_PrintForm> {
 
   String _quantityType = 'Weight';
   String? _selectedUnit = 'g';
+  DateTime? _mfgDateTime = DateTime.now();
 
   final TextEditingController _productName = TextEditingController();
   final TextEditingController _quantity = TextEditingController();
   final TextEditingController _mrp = TextEditingController();
+  final TextEditingController _mfgDate = TextEditingController();
 
   final FocusNode _productNameFocus = FocusNode();
   final FocusNode _quantityFocus = FocusNode();
   final FocusNode _mrpFocus = FocusNode();
+  final FocusNode _mfgDateFocus = FocusNode();
+
+  // Date picker for first date field
+  Future<void> _selectMfgDate(BuildContext context) async {
+    // FocusScope.of(context).unfocus();
+    FocusScope.of(context).requestFocus(FocusNode());
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _mfgDateTime = picked;
+        _mfgDate.value = TextEditingValue(text: DateFormat('d MMMM y').format(picked));
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +149,6 @@ class PrinterForm extends State<_PrintForm> {
                   children: [
                     Text(_quantityType, style: Theme.of(context).textTheme.labelLarge),
                     TextFormField(
-                      focusNode: _quantityFocus,
                       onChanged: (value) => setState(() {}),
                       decoration: InputDecoration(
                         enabled: _quantityType != 'None',
@@ -178,6 +201,15 @@ class PrinterForm extends State<_PrintForm> {
                           ),
                         ],
                       ),
+                      suffixIcon:
+                          _mrpFocus.hasFocus && _mrp.text.isNotEmpty
+                              ? IconButton(
+                                icon: Icon(Icons.clear),
+                                onPressed: () {
+                                  _mrp.clear();
+                                },
+                              )
+                              : null,
                     ),
                     controller: _mrp,
                   ),
@@ -187,6 +219,53 @@ class PrinterForm extends State<_PrintForm> {
 
             // Horizontal Divider
             Padding(padding: const EdgeInsets.all(16.0), child: const Divider(height: 1, thickness: 1)),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                spacing: 8,
+                children: [Text('Dates', style: Theme.of(context).textTheme.titleMedium)],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 8,
+                children: [
+                  Text('MFG Date', style: Theme.of(context).textTheme.labelLarge),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _selectMfgDate(context);
+                          },
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              focusNode: _mfgDateFocus,
+                              onChanged: (value) => setState(() {}),
+                              controller: _mfgDate,
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _mfgDate.clear(); // Clear the date
+                            _mfgDateTime = null; // Reset the selected date
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
