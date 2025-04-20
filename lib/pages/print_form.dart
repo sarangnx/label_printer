@@ -38,10 +38,12 @@ class _PrintForm extends StatefulWidget {
   State<_PrintForm> createState() => PrinterForm();
 }
 
+enum QuantityTypes { weight, count, none }
+
 class PrinterForm extends State<_PrintForm> {
   final _formKey = GlobalKey<FormState>();
 
-  String _quantityType = 'Weight';
+  QuantityTypes _quantityType = QuantityTypes.weight;
   String? _selectedUnit = 'g';
   DateTime? _mfgDateTime = DateTime.now();
   DateTime? _expiryDateTime = DateTime.now().add(Duration(days: 45));
@@ -131,47 +133,43 @@ class PrinterForm extends State<_PrintForm> {
 
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
-                spacing: 10,
-                children: [
-                  Text('Quantity Type', style: Theme.of(context).textTheme.labelLarge),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _quantityType,
-                      items: [
-                        DropdownMenuItem<String>(value: 'Weight', child: Text('Weight')),
-                        DropdownMenuItem<String>(value: 'Count', child: Text('Count')),
-                        DropdownMenuItem<String>(value: 'None', child: Text('None')),
-                      ],
-                      onChanged: (val) {
-                        setState(() {
-                          _quantityType = val as String;
-                          if (val == 'None') {
-                            _quantity.clear();
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              child: SizedBox(
+                width: double.infinity, // Makes the SegmentedButton take full width
+                child: SegmentedButton<QuantityTypes>(
+                  multiSelectionEnabled: false,
+                  segments: const [
+                    ButtonSegment(value: QuantityTypes.weight, label: Text('Weight')),
+                    ButtonSegment(value: QuantityTypes.count, label: Text('Count')),
+                    ButtonSegment(value: QuantityTypes.none, label: Text('None')),
+                  ],
+                  selected: {_quantityType},
+                  onSelectionChanged: (Set<QuantityTypes> newSelection) {
+                    setState(() {
+                      _quantityType = newSelection.first;
+                    });
+                  },
+                ),
               ),
             ),
 
             // Quantity
-            if (_quantityType != 'None')
+            if (_quantityType != QuantityTypes.none)
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 8,
                   children: [
-                    Text(_quantityType, style: Theme.of(context).textTheme.labelLarge),
+                    Text(
+                      _quantityType == QuantityTypes.weight ? 'Weight' : 'Count',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
                     TextFormField(
                       onChanged: (value) => setState(() {}),
                       decoration: InputDecoration(
-                        enabled: _quantityType != 'None',
+                        enabled: _quantityType != QuantityTypes.none,
                         suffixIcon:
-                            _quantityType == 'Weight'
+                            _quantityType == QuantityTypes.weight
                                 ? Row(
                                   mainAxisSize: MainAxisSize.min, // Ensures the row takes minimal space
                                   children: [
@@ -205,7 +203,7 @@ class PrinterForm extends State<_PrintForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 8,
                 children: [
-                  Text('MRP.', style: Theme.of(context).textTheme.labelLarge),
+                  Text('MRP', style: Theme.of(context).textTheme.labelLarge),
                   TextFormField(
                     focusNode: _mrpFocus,
                     onChanged: (value) => setState(() {}),
@@ -266,15 +264,16 @@ class PrinterForm extends State<_PrintForm> {
                           ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _mfgDate.clear(); // Clear the date
-                            _mfgDateTime = null; // Reset the selected date
-                          });
-                        },
-                      ),
+                      if (_mfgDate.text.isNotEmpty)
+                        IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _mfgDate.clear(); // Clear the date
+                              _mfgDateTime = null; // Reset the selected date
+                            });
+                          },
+                        ),
                     ],
                   ),
                 ],
@@ -282,14 +281,15 @@ class PrinterForm extends State<_PrintForm> {
             ),
 
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
+                spacing: 8,
                 children: [
-                  Checkbox(
+                  Switch(
                     value: _showExpiryDate,
                     onChanged: (value) {
                       setState(() {
-                        _showExpiryDate = value!;
+                        _showExpiryDate = value;
                       });
                     },
                   ),
@@ -298,42 +298,44 @@ class PrinterForm extends State<_PrintForm> {
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
-                children: [
-                  Text('Expiry Date', style: Theme.of(context).textTheme.labelLarge),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            _selectExpiryDate(context);
-                          },
-                          child: AbsorbPointer(
-                            child: TextFormField(onChanged: (value) => setState(() {}), controller: _expiryDate),
+            if (_showExpiryDate)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 8,
+                  children: [
+                    Text('Expiry Date', style: Theme.of(context).textTheme.labelLarge),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              _selectExpiryDate(context);
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(onChanged: (value) => setState(() {}), controller: _expiryDate),
+                            ),
                           ),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _expiryDate.clear(); // Clear the date
-                            _expiryDateTime = null; // Reset the selected date
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                        if (_expiryDate.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              setState(() {
+                                _expiryDate.clear(); // Clear the date
+                                _expiryDateTime = null; // Reset the selected date
+                              });
+                            },
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
 
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
