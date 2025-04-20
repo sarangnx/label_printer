@@ -45,9 +45,11 @@ class PrinterForm extends State<_PrintForm> {
 
   final TextEditingController _productName = TextEditingController();
   final TextEditingController _quantity = TextEditingController();
+  final TextEditingController _mrp = TextEditingController();
 
   final FocusNode _productNameFocus = FocusNode();
   final FocusNode _quantityFocus = FocusNode();
+  final FocusNode _mrpFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +157,33 @@ class PrinterForm extends State<_PrintForm> {
                   ],
                 ),
               ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 8,
+                children: [
+                  Text('MRP.', style: Theme.of(context).textTheme.labelLarge),
+                  TextFormField(
+                    focusNode: _mrpFocus,
+                    onChanged: (value) => setState(() {}),
+                    decoration: InputDecoration(
+                      prefixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 22),
+                            child: Text('₹', style: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 18)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    controller: _mrp,
+                  ),
+                ],
+              ),
+            ),
 
             // Horizontal Divider
             Padding(padding: const EdgeInsets.all(16.0), child: const Divider(height: 1, thickness: 1)),
