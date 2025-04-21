@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:label_printer/models/company.dart';
+
+import '../api/printer.dart';
+import '../models/company.dart';
 
 class PrintFormPage extends StatelessWidget {
   final Company company;
@@ -42,6 +44,7 @@ enum QuantityTypes { weight, count, none }
 
 class PrinterForm extends State<_PrintForm> {
   final _formKey = GlobalKey<FormState>();
+  Printer _printer = Printer();
 
   QuantityTypes _quantityType = QuantityTypes.weight;
   String? _selectedUnit = 'g';
@@ -383,6 +386,7 @@ class PrinterForm extends State<_PrintForm> {
                         padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16)),
                       ),
                       onPressed: () {
+                        _printer.init();
                         if (_formKey.currentState!.validate()) {
                           // Handle the print action here
                         }
