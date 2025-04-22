@@ -385,8 +385,9 @@ class PrinterForm extends State<_PrintForm> {
                       style: Theme.of(context).filledButtonTheme.style!.copyWith(
                         padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16)),
                       ),
-                      onPressed: () {
-                        _printer.init();
+                      onPressed: () async {
+                        await _printer.init();
+
                         if (_formKey.currentState!.validate()) {
                           // Handle the print action here
                         }
