@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 class UsbService {
   static const MethodChannel _channel = MethodChannel('com.sarang.label/usb');
@@ -15,6 +16,28 @@ class UsbService {
     } catch (e) {
       print('Error requesting permission: $e');
       return false;
+    }
+  }
+
+  static Future<void> openConnection() async {
+    try {
+      final bool success = await _channel.invokeMethod('openConnection');
+
+      if (!success) {
+        throw Exception('Failed to open connection');
+      }
+    } catch (e) {
+      print('Error opening device: $e');
+    }
+  }
+
+  static Future<void> write(Uint8List data) async {
+    try {
+      final dynamic res = await _channel.invokeMethod('writeData', {'data': data});
+
+      debugPrint('bytes: $res');
+    } catch (e) {
+      print('Error writing data: $e');
     }
   }
 }
