@@ -61,6 +61,7 @@ class PrinterForm extends State<_PrintForm> {
   final TextEditingController _mrp = TextEditingController();
   final TextEditingController _mfgDate = TextEditingController();
   final TextEditingController _expiryDate = TextEditingController();
+  final TextEditingController _copies = TextEditingController();
 
   final FocusNode _productNameFocus = FocusNode();
   final FocusNode _mrpFocus = FocusNode();
@@ -437,6 +438,22 @@ class PrinterForm extends State<_PrintForm> {
                   ],
                 ),
               ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 8,
+                children: [
+                  Text('Copies', style: Theme.of(context).textTheme.labelLarge),
+                  TextFormField(
+                    onChanged: (value) => setState(() {}),
+                    controller: _copies,
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
+              ),
+            ),
 
             Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
