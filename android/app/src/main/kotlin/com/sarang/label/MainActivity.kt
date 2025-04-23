@@ -3,7 +3,11 @@ package com.sarang.label
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.hardware.usb.UsbConstants
 import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbDeviceConnection
+import android.hardware.usb.UsbEndpoint
+import android.hardware.usb.UsbInterface
 import android.hardware.usb.UsbManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -14,6 +18,10 @@ class MainActivity : FlutterActivity() {
     private val ACTION_USB_PERMISSION = "com.sarang.label.USB_PERMISSION"
     private lateinit var usbManager: UsbManager
     private var device: UsbDevice? = null
+    private var connection: UsbDeviceConnection? = null
+    private var usbInterface: UsbInterface? = null
+    private var usbEndpoint: UsbEndpoint? = null
+    private var usbEndpointReceiver: UsbEndpoint? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -34,6 +42,17 @@ class MainActivity : FlutterActivity() {
                 } else {
                     result.error("INVALID_ARGUMENT", "Device ID is required", null)
                 }
+            } else if (call.method == "writeData") {
+                val data = call.argument<ByteArray>("data")
+                if (data != null && device != null) {
+                    val success = writeData(data)
+                    result.success(success)
+                } else {
+                    result.error("INVALID_ARGUMENT", "Data or device is missing", null)
+                }
+            } else if (call.method == "openConnection") {
+                val success = openConnection()
+                result.success(success)
             } else {
                 result.notImplemented()
             }
@@ -80,5 +99,51 @@ class MainActivity : FlutterActivity() {
             return true
         }
         return false
+    }
+
+    private fun openConnection(): Boolean {
+        if (device == null) {
+            return false
+        }
+
+        connection = usbManager.openDevice(device)
+
+        if (connection == null) {
+            return false
+        }
+
+        usbInterface = device!!.getInterface(0)
+
+        if (usbInterface == null || !connection!!.claimInterface(usbInterface, true)) {
+            return false
+        }
+
+        for (i in 0 until usbInterface!!.endpointCount) {
+            val endpoint = usbInterface!!.getEndpoint(i)
+            if (endpoint.type == UsbConstants.USB_ENDPOINT_XFER_BULK) {
+                if (endpoint.direction == UsbConstants.USB_DIR_OUT) {
+                    usbEndpoint = endpoint
+                } else if (endpoint.direction == UsbConstants.USB_DIR_IN) {
+                    usbEndpointReceiver = endpoint
+                }
+            }
+        }
+
+        if (usbEndpoint == null) {
+            return false
+        }
+
+        return true
+    }
+
+    private fun writeData(data: ByteArray): Any {
+        if (device == null || connection == null || usbEndpoint == null) {
+            print("Device, connection, or endpoint is null")
+            return 0
+        }
+
+        val bytesWritten = connection!!.bulkTransfer(usbEndpoint, data, data.size, 1000)
+
+        return bytesWritten
     }
 }
