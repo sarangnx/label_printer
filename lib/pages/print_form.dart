@@ -48,13 +48,16 @@ class PrinterForm extends State<_PrintForm> {
 
   QuantityTypes _quantityType = QuantityTypes.weight;
   String? _selectedUnit = 'g';
+  String? _selectedDuration = 'days';
   DateTime? _mfgDateTime = DateTime.now();
   DateTime? _expiryDateTime = DateTime.now().add(Duration(days: 45));
   bool _showExpiryDate = false;
+  bool _showBestBefore = false;
   bool _showMonthOnly = false;
 
   final TextEditingController _productName = TextEditingController();
   final TextEditingController _quantity = TextEditingController();
+  final TextEditingController _bestBefore = TextEditingController();
   final TextEditingController _mrp = TextEditingController();
   final TextEditingController _mfgDate = TextEditingController();
   final TextEditingController _expiryDate = TextEditingController();
@@ -196,6 +199,7 @@ class PrinterForm extends State<_PrintForm> {
                                 : null,
                       ),
                       controller: _quantity,
+                      keyboardType: TextInputType.number,
                     ),
                   ],
                 ),
@@ -232,6 +236,7 @@ class PrinterForm extends State<_PrintForm> {
                               : null,
                     ),
                     controller: _mrp,
+                    keyboardType: TextInputType.number,
                   ),
                 ],
               ),
@@ -330,6 +335,7 @@ class PrinterForm extends State<_PrintForm> {
                     onChanged: (value) {
                       setState(() {
                         _showExpiryDate = value;
+                        _showBestBefore = _showBestBefore ? !value : false;
                       });
                     },
                   ),
@@ -375,6 +381,64 @@ class PrinterForm extends State<_PrintForm> {
               ),
 
             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                spacing: 8,
+                children: [
+                  Switch(
+                    value: _showBestBefore,
+                    onChanged: (value) {
+                      setState(() {
+                        _showBestBefore = value;
+                        _showExpiryDate = _showExpiryDate ? !value : false;
+                      });
+                    },
+                  ),
+                  Text('Show best before'),
+                ],
+              ),
+            ),
+
+            if (_showBestBefore)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 8,
+                  children: [
+                    Text('Best Before', style: Theme.of(context).textTheme.labelLarge),
+                    TextFormField(
+                      onChanged: (value) => setState(() {}),
+                      decoration: InputDecoration(
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min, // Ensures the row takes minimal space
+                          children: [
+                            DropdownButton<String>(
+                              value: _selectedDuration,
+                              isDense: true,
+                              underline: const SizedBox(), // Removes the default underline
+                              items: const [
+                                DropdownMenuItem(value: 'days', child: Text('days')),
+                                DropdownMenuItem(value: 'weeks', child: Text('weeks')),
+                                DropdownMenuItem(value: 'months', child: Text('months')),
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedDuration = value; // Update the selected unit
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      controller: _bestBefore,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ],
+                ),
+              ),
+
+            Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -386,7 +450,10 @@ class PrinterForm extends State<_PrintForm> {
                         padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16)),
                       ),
                       onPressed: () async {
-                        await _printer.init();
+                        // await _printer.init();
+                        // await _printer.printLabel();
+
+                        debugPrint(_formKey.currentState!.validate().toString());
 
                         if (_formKey.currentState!.validate()) {
                           // Handle the print action here
