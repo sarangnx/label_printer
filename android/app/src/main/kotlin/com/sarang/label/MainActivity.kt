@@ -142,7 +142,7 @@ class MainActivity : FlutterActivity() {
             return 0
         }
 
-        val bytesWritten = connection!!.bulkTransfer(usbEndpoint, data, data.size, 1000)
+        val bytesWritten = connection!!.bulkTransfer(usbEndpoint, data, data.size, 0)
 
         return bytesWritten
     }

@@ -439,6 +439,8 @@ class PrinterForm extends State<_PrintForm> {
                 ),
               ),
 
+            Padding(padding: const EdgeInsets.all(16.0), child: const Divider(height: 1, thickness: 1)),
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -450,6 +452,12 @@ class PrinterForm extends State<_PrintForm> {
                     onChanged: (value) => setState(() {}),
                     controller: _copies,
                     keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty || int.tryParse(value) == 0) {
+                        return 'Number of copies is required';
+                      }
+                      return null;
+                    },
                   ),
                 ],
               ),
@@ -467,13 +475,35 @@ class PrinterForm extends State<_PrintForm> {
                         padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16)),
                       ),
                       onPressed: () async {
-                        // await _printer.init();
-                        // await _printer.printLabel();
-
-                        debugPrint(_formKey.currentState!.validate().toString());
-
                         if (_formKey.currentState!.validate()) {
-                          // Handle the print action here
+                          Map<String, dynamic> data = {
+                            // product details
+                            'productName': _productName.text,
+                            'quantityType':
+                                _quantityType == QuantityTypes.weight
+                                    ? 'Weight'
+                                    : _quantityType == QuantityTypes.count
+                                    ? 'Count'
+                                    : 'None',
+                            'quantity': _quantity.text,
+                            'unit': _selectedUnit,
+                            'mrp': _mrp.text,
+                            'showExpiryDate': _showExpiryDate,
+                            'showBestBefore': _showBestBefore,
+                            'showMonthOnly': _showMonthOnly,
+                            'mfgDate': _mfgDate.text,
+                            'expiryDate': _expiryDate.text,
+                            'bestBefore': _bestBefore.text,
+                            'bestBeforeUnit': _selectedDuration,
+                            'copies': int.tryParse(_copies.text) ?? 1,
+                            // company details
+                            'companyName': widget.company.name,
+                            'companyAddress': widget.company.address,
+                            'companyPhone': widget.company.phone,
+                            'companyEmail': widget.company.email,
+                            'companyFssai': widget.company.fssai,
+                          };
+                          await _printer.printLabel(data);
                         }
                       },
                       child: Row(
