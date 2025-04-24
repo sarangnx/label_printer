@@ -44,7 +44,7 @@ enum QuantityTypes { weight, count, none }
 
 class PrinterForm extends State<_PrintForm> {
   final _formKey = GlobalKey<FormState>();
-  Printer _printer = Printer();
+  final Printer _printer = Printer();
 
   QuantityTypes _quantityType = QuantityTypes.weight;
   String? _selectedUnit = 'g';
@@ -52,16 +52,16 @@ class PrinterForm extends State<_PrintForm> {
   DateTime? _mfgDateTime = DateTime.now();
   DateTime? _expiryDateTime = DateTime.now().add(Duration(days: 45));
   bool _showExpiryDate = false;
-  bool _showBestBefore = false;
+  bool _showBestBefore = true;
   bool _showMonthOnly = false;
 
   final TextEditingController _productName = TextEditingController();
   final TextEditingController _quantity = TextEditingController();
-  final TextEditingController _bestBefore = TextEditingController();
+  final TextEditingController _bestBefore = TextEditingController(text: '30');
   final TextEditingController _mrp = TextEditingController();
   final TextEditingController _mfgDate = TextEditingController();
   final TextEditingController _expiryDate = TextEditingController();
-  final TextEditingController _copies = TextEditingController();
+  final TextEditingController _copies = TextEditingController(text: '2');
 
   final FocusNode _productNameFocus = FocusNode();
   final FocusNode _mrpFocus = FocusNode();
@@ -503,7 +503,38 @@ class PrinterForm extends State<_PrintForm> {
                             'companyEmail': widget.company.email,
                             'companyFssai': widget.company.fssai,
                           };
-                          await _printer.printLabel(data);
+
+                          try {
+                            await _printer.printLabel(data);
+
+                            if (mounted) {
+                              ScaffoldMessenger.of(
+                                // ignore: use_build_context_synchronously
+                                context,
+                              ).showSnackBar(
+                                SnackBar(
+                                  content: Text('Label printed!'),
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            print('Error: $e');
+
+                            if (mounted) {
+                              ScaffoldMessenger.of(
+                                // ignore: use_build_context_synchronously
+                                context,
+                              ).showSnackBar(
+                                SnackBar(
+                                  content: Text('Label printing failed!'),
+                                  backgroundColor: Theme.of(context).colorScheme.error,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          }
                         }
                       },
                       child: Row(
