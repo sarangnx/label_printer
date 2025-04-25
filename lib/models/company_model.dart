@@ -1,16 +1,15 @@
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:label_printer/models/company.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CompanyModel extends ChangeNotifier {
   final List<Company> _companies = [];
 
-  UnmodifiableListView<Company> get companies =>
-      UnmodifiableListView(_companies);
+  UnmodifiableListView<Company> get companies => UnmodifiableListView(_companies);
 
   /// add a new company to list
   void add(Company company) async {
@@ -49,8 +48,9 @@ class CompanyModel extends ChangeNotifier {
   // open file for read/write
   Future<File> openFile() async {
     final folder = await getExternalStorageDirectory();
-    String path = folder.path;
+    String path = folder!.path;
 
+    // create a file if it does not exist
     if (!await File('$path/companies.json').exists()) {
       await File('$path/companies.json').create();
     }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:label_printer/models/company_model.dart';
+import '../models/company_model.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -22,122 +22,71 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFF2ED),
-      body: HomeBody(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      appBar: AppBar(title: const Text('Select Label Template')),
+      body: const HomeBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/add');
+          Navigator.pushNamed(context, '/add-company');
         },
-        child: Icon(Icons.add),
-        elevation: 2.0,
-        backgroundColor: Color(0xFFF5855A),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(Icons.home),
-                color: Color(0xFFF5855A),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.folder),
-                color: Color(0xFFF5855A),
-                onPressed: () {},
-              )
-            ],
-          ),
-        ),
-        shape: CircularNotchedRectangle(),
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
 class HomeBody extends StatelessWidget {
+  const HomeBody({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: true,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Text(
-              'Select a template',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFF5855A),
-              ),
-            ),
-            Divider(color: Colors.transparent, height: 50),
-            Consumer<CompanyModel>(
-              builder: (context, model, child) => model.companies.length > 0
-                  ? CompanyList(model: model)
-                  : EmptyPage(),
-            ),
-          ],
-        ),
+      child: Consumer<CompanyModel>(
+        builder: (context, model, child) {
+          if (model.companies.isEmpty) return EmptyPage();
+
+          return ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: model.companies.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Card(
+                  elevation: 0.1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: const BorderSide(width: 0.1),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/print', arguments: model.companies[index]);
+                    },
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      leading: CircleAvatar(
+                        radius: 20, // Size of the avatar
+                        child: Text(model.companies[index].name[0]), // Display initials or text
+                      ),
+                      // trailing: const Icon(Icons.arrow_circle_right),
+                      title: Text(model.companies[index].name),
+                      subtitle: Text(model.companies[index].address, overflow: TextOverflow.ellipsis, maxLines: 1),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
 }
 
-class CompanyList extends StatelessWidget {
-  CompanyList({this.model});
-
-  final CompanyModel model;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: model.companies.length,
-      itemBuilder: (context, index) {
-        return Card(
-          color: Color(0xFFF5855A),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          ),
-          child: InkWell(
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/input',
-                arguments: model.companies[index],
-              );
-            },
-            child: ListTile(
-              title: Text(
-                '${model.companies[index].name}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
 class EmptyPage extends StatelessWidget {
+  const EmptyPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('<empty>'),
-    );
+    return Center(child: Text('<empty>'));
   }
 }

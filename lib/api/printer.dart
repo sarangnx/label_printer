@@ -1,36 +1,43 @@
-import 'dart:typed_data';
-import 'dart:convert';
 import 'dart:async';
-import 'package:flutter_usb_write/flutter_usb_write.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
+import '../services/usb_service.dart';
 
 class Printer {
-  FlutterUsbWrite usb = FlutterUsbWrite();
-  UsbDevice device;
+  late UsbDevice device;
 
-  Future init() async {
+  Future<void> init() async {
+    List<UsbDevice> devices = await UsbService.listDevices();
+
+    device = devices.first;
+
+    bool success = await UsbService.requestPermission(device!.deviceId);
+
+    if (!success) {
+      throw Exception('Permission denied');
+    }
+
+    await UsbService.openConnection();
+    print('device connected');
+  }
+
+  Future<void> sendCommand(String command) async {
     try {
-      List<UsbDevice> devices = await usb.listDevices();
+      Uint8List com = utf8.encode(command);
 
-      device = devices[0];
-
-      await usb.open(vendorId: device.vid, productId: device.pid);
+      await UsbService.write(com);
     } catch (e) {
       print(e);
     }
   }
 
-  Future sendCommand(String command) async {
-    Uint8List com = utf8.encode(command);
+  Future<void> sendCommandBytes(List<int> bytes) async {
     try {
-      await usb.write(com);
+      Uint8List com = Uint8List.fromList(bytes);
+      await UsbService.write(com);
     } catch (e) {
-      print(e);
-    }
-  }
-
-  Future dispose() async {
-    if (usb != null) {
-      await usb.close();
+      print('Error sending command: $e');
     }
   }
 
@@ -39,153 +46,92 @@ class Printer {
   /// Send [text] to printer memory. [x] and [y] are coordinates to place the
   /// [text]. [font] is the name of font supported by printer.
   /// [mx] and [my] are used to multiply base font size to get desired size.
+  /// [rotation] is the angle of rotation in degrees. allowed values are 0, 90, 180, 270
+  /// [alignment] is the alignment of text. 0 & 1 Left, 2 Center, 3 Right
+  /// [type] is the command type. TEXT or BLOCK
   Future text({
-    String text,
-    int x,
-    int y,
-    String font,
+    required String text,
+    required int x,
+    required int y,
+    required String font,
     int mx = 1,
     int my = 1,
+    int rotation = 0,
+    int alignment = 1,
+    type = "TEXT",
   }) async {
-    await sendCommand(
-      'TEXT $x, $y, "$font", 0, $mx , $my, "$text" \r\n',
-    );
+    await sendCommand('$type $x, $y, "$font", $rotation, $mx , $my, $alignment, "$text" \r\n');
   }
 
-  Future printLabel(Map<String, dynamic> data) async {
-    // Initialize Print Properties
+  Future<void> printLabel(Map<String, dynamic> data) async {
+    await init();
     await sendCommand('SIZE 100 mm,30 mm\r\n');
     await sendCommand('GAP 2.5 mm,0 mm\r\n');
     await sendCommand('CLS\r\n');
+    await sendCommand('CODEPAGE UTF-8\r\n');
 
-    // Take top left corner of label as reference point
-    // (x, y) coordinates are calculated by taking
-    // 1mm = 8 dots (for 203 dpi printer)
-    //
-    // 100x30 mm label = 800x240 dots
+    await sendCommand('DIRECTION 0,0\r\n');
     await sendCommand('REFERENCE 0,0\r\n');
 
-    // Name
-    await text(text: data['name'], x: 30, y: 30, font: 'B.FNT', mx: 2, my: 3);
-    await text(text: data['name'], x: 430, y: 30, font: 'B.FNT', mx: 2, my: 3);
+    await text(text: data['companyName'], x: 200, y: 10, font: fontTypes['largeBold']!, alignment: 2);
+    await text(text: data['companyName'], x: 620, y: 10, font: fontTypes['largeBold']!, alignment: 2);
 
-    // Date Type
-    await text(text: '${data['dateType']}:', x: 30, y: 80, font: '3.EFT');
-    await text(text: '${data['dateType']}:', x: 430, y: 80, font: '3.EFT');
+    await text(text: data['companyAddress'], x: 200, y: 35, font: fontTypes['small']!, alignment: 2);
+    await text(text: data['companyAddress'], x: 620, y: 35, font: fontTypes['small']!, alignment: 2);
 
-    // Date
-    if (data['dateType'] == 'Date') {
-      await text(text: data['date'], x: 110, y: 82, font: 'D.FNT');
-      await text(text: data['date'], x: 510, y: 82, font: 'D.FNT');
-    } else {
-      await text(text: data['date'], x: 200, y: 82, font: 'D.FNT');
-      await text(text: data['date'], x: 600, y: 82, font: 'D.FNT');
+    if (data['companyPhone'] != null && data['companyPhone'].isNotEmpty) {
+      await text(text: '#: ${data['companyPhone']}', x: 200, y: 50, font: fontTypes['small']!, alignment: 2);
+      await text(text: '#: ${data['companyPhone']}', x: 620, y: 50, font: fontTypes['small']!, alignment: 2);
     }
 
-    var padding = 0;
-
-    // Date 2
-    if (data['showDate2']) {
-      // If date2 is needed, shift everything down by 30
-      padding = 30;
-
-      // Date Type
-      await text(text: 'Expiry Date:', x: 30, y: 110, font: '3.EFT');
-      await text(text: 'Expiry Date:', x: 430, y: 110, font: '3.EFT');
-
-      // Date Value
-      await text(text: data['date'], x: 200, y: 112, font: 'D.FNT');
-      await text(text: data['date'], x: 600, y: 112, font: 'D.FNT');
+    if (data['productName'] != null && data['productName'].isNotEmpty) {
+      await text(text: data['productName'], x: 200, y: 75, font: fontTypes['bold']!, alignment: 2);
+      await text(text: data['productName'], x: 620, y: 75, font: fontTypes['bold']!, alignment: 2);
     }
 
-    // Quantity Type
-    await text(
-      text: '${data['quantityType']}:',
-      x: 30,
-      y: 110 + padding,
-      font: '3.EFT',
-    );
-    await text(
-      text: '${data['quantityType']}:',
-      x: 430,
-      y: 110 + padding,
-      font: '3.EFT',
-    );
+    if (data['quantityType'] != 'None') {
+      var unit = data['quantityType'] == 'Weight' ? data['unit'] : '';
+      var quantity = '${data['quantityType']}: ${data['quantity']} $unit';
 
-    // Quantity
-    await text(text: data['quantity'], x: 130, y: 112 + padding, font: 'D.FNT');
-    await text(text: data['quantity'], x: 530, y: 112 + padding, font: 'D.FNT');
-
-    // MRP Label
-    await text(text: 'MRP:', x: 30, y: 140 + padding, font: '3.EFT');
-    await text(text: 'MRP:', x: 430, y: 140 + padding, font: '3.EFT');
-
-    // MRP
-    await text(text: data['mrp'], x: 90, y: 142 + padding, font: 'D.FNT');
-    await text(text: data['mrp'], x: 490, y: 142 + padding, font: 'D.FNT');
-
-    // Best before
-    if (data['bestBefore'] != null) {
-      var message = 'Best before ${data['bestBefore']}';
-      await text(text: message, x: 30, y: 170 + padding, font: 'D.FNT');
-      await text(text: message, x: 430, y: 170 + padding, font: 'D.FNT');
+      await text(text: quantity, x: 40, y: 100, font: fontTypes['normal']!);
+      await text(text: quantity, x: 460, y: 100, font: fontTypes['normal']!);
     }
 
-    // Phone
-    if (data['phone'] != null && data['phone'] != '') {
-      await text(
-        text: 'Customer Care: ${data['phone']}',
-        x: 30,
-        y: 200,
-        font: '0',
-        mx: 6,
-        my: 5,
-      );
-      await text(
-        text: 'Customer Care: ${data['phone']}',
-        x: 430,
-        y: 200,
-        font: '0',
-        mx: 6,
-        my: 5,
-      );
+    await text(text: 'MRP: Rs. ${data['mrp']}', x: 40, y: 120, font: fontTypes['normal']!);
+    await text(text: 'MRP: Rs. ${data['mrp']}', x: 460, y: 120, font: fontTypes['normal']!);
+
+    await text(text: 'MFG: ${data['mfgDate']}', x: 40, y: 150, font: fontTypes['normal']!);
+    await text(text: 'MFG: ${data['mfgDate']}', x: 460, y: 150, font: fontTypes['normal']!);
+
+    if (data['showExpiryDate']) {
+      await text(text: 'Expiry: ${data['expiryDate']}', x: 40, y: 170, font: fontTypes['normal']!);
+      await text(text: 'Expiry: ${data['expiryDate']}', x: 460, y: 170, font: fontTypes['normal']!);
+    } else if (data['showBestBefore']) {
+      var bestBefore = 'Best before ${data['bestBefore']} ${data['bestBeforeUnit']}';
+
+      await text(text: bestBefore, x: 40, y: 170, font: fontTypes['normal']!);
+      await text(text: bestBefore, x: 460, y: 170, font: fontTypes['normal']!);
     }
 
-    // Fssai
-    if (data['fssai'] != null && data['fssai'] != '') {
-      await text(
-        text: 'fssai: ${data['fssai']}',
-        x: 30,
-        y: 220,
-        font: '0',
-        mx: 6,
-        my: 5,
-      );
-      await text(
-        text: 'fssai: ${data['fssai']}',
-        x: 430,
-        y: 220,
-        font: '0',
-        mx: 6,
-        my: 5,
-      );
+    if (data['companyFssai'] != null && data['companyFssai'].isNotEmpty) {
+      await text(text: 'FSSAI: ${data['companyFssai']}', x: 200, y: 215, font: fontTypes['small']!, alignment: 2);
+      await text(text: 'FSSAI: ${data['companyFssai']}', x: 620, y: 215, font: fontTypes['small']!, alignment: 2);
     }
 
-    // address
-    if (data['address'] != null && data['address'] != '') {
-      await sendCommand(
-        'BLOCK 240, 190, 160, 50, "0", 0, 6, 5, "MFD BY: ${data['address']}" \r\n',
-      );
-      await sendCommand(
-        'BLOCK 640, 190, 160, 50, "0", 0, 6, 5, "MFD BY: ${data['address']}" \r\n',
-      );
-    }
-
-    int copies = int.tryParse(data['copies']) ?? 1;
+    int copies = data['copies'] ?? 1;
     copies = (copies / 2).ceil();
 
     await sendCommand('PRINT $copies\r\n');
 
-    await dispose();
+    await UsbService.dispose();
   }
 }
+
+Map<String, String> fontTypes = {
+  'tiny': 'A.FNT',
+  'small': '1.EFT',
+  'medium': '2.EFT',
+  'bold': '3.EFT',
+  'normal': 'D.FNT',
+  'largeBold': '4.EFT',
+};

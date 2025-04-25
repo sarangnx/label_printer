@@ -2,24 +2,26 @@ class Company {
   String name;
   String address;
   String phone;
-  String fssai;
+  String? email;
+  String? fssai;
 
-  Company({this.name, this.address, this.phone, this.fssai});
+  Company({required this.name, required this.address, required this.phone, this.fssai, this.email});
 
-  Company.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    address = json['address'];
-    phone = json['phone'];
-    fssai = json['fssai'];
-  }
+  Company.fromJson(Map<String, dynamic> json)
+    : name = json['name'] ?? '',
+      address = json['address'] ?? '',
+      phone = json['phone'] ?? '',
+      email = json['email'] ?? '',
+      fssai = json['fssai'] ?? '';
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
 
-    data['name'] = this.name;
-    data['address'] = this.address;
-    data['phone'] = this.phone;
-    data['fssai'] = this.fssai;
+    data['name'] = name;
+    data['address'] = address;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['fssai'] = fssai;
 
     return data;
   }

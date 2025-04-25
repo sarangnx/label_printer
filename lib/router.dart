@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 
-import 'package:label_printer/pages/home.dart';
-import 'package:label_printer/pages/add.dart';
-import 'package:label_printer/pages/user_input.dart';
+import 'models/company.dart';
+import 'pages/add.dart';
+import 'pages/home.dart';
+import 'pages/print_form.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case '/':
       return MaterialPageRoute(builder: (context) => HomePage());
-    case '/add':
-      return MaterialPageRoute(builder: (context) => AddItem());
-    case '/input':
-      var company = settings.arguments;
-      return MaterialPageRoute(
-        builder: (context) => UserInput(
-          company: company,
-        ),
-      );
+    case '/print':
+      var company = settings.arguments as Company;
+      return MaterialPageRoute(builder: (context) => PrintFormPage(company: company));
+    case '/add-company':
+      return MaterialPageRoute(builder: (context) => AddCompanyPage());
     default:
       return MaterialPageRoute(builder: (context) => HomePage());
   }
