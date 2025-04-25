@@ -106,7 +106,7 @@ class PrinterForm extends State<_PrintForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      autovalidateMode: AutovalidateMode.onUnfocus,
       key: _formKey,
       child: SingleChildScrollView(
         child: Column(

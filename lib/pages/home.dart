@@ -21,7 +21,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: const Text('Select Label Template')), body: const HomeBody());
+    return Scaffold(
+      appBar: AppBar(title: const Text('Select Label Template')),
+      body: const HomeBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/add-company');
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }
 
