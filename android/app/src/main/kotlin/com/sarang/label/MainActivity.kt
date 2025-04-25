@@ -53,6 +53,9 @@ class MainActivity : FlutterActivity() {
             } else if (call.method == "openConnection") {
                 val success = openConnection()
                 result.success(success)
+            } else if (call.method == "dispose") {
+                dispose()
+                result.success(null)
             } else {
                 result.notImplemented()
             }
@@ -134,6 +137,20 @@ class MainActivity : FlutterActivity() {
         }
 
         return true
+    }
+
+    private fun dispose() {
+        if (connection != null) {
+            if (usbInterface != null) {
+                connection!!.releaseInterface(usbInterface)
+                usbInterface = null
+            }
+            connection!!.close()
+            connection = null
+        }
+        device = null
+        usbEndpoint = null
+        usbEndpointReceiver = null
     }
 
     private fun writeData(data: ByteArray): Any {

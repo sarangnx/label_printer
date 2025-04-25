@@ -31,6 +31,14 @@ class UsbService {
     }
   }
 
+  static Future<void> dispose() async {
+    try {
+      await _channel.invokeMethod('dispose');
+    } catch (e) {
+      print('Error closing device: $e');
+    }
+  }
+
   static Future<void> write(Uint8List data) async {
     try {
       final dynamic res = await _channel.invokeMethod('writeData', {'data': data});

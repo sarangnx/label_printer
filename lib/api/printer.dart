@@ -122,6 +122,8 @@ class Printer {
     copies = (copies / 2).ceil();
 
     await sendCommand('PRINT $copies\r\n');
+
+    await UsbService.dispose();
   }
 }
 
