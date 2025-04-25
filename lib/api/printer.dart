@@ -90,7 +90,7 @@ class Printer {
     }
 
     if (data['quantityType'] != 'None') {
-      var unit = data['quantityType'] == 'weight' ? data['unit'] : '';
+      var unit = data['quantityType'] == 'Weight' ? data['unit'] : '';
       var quantity = '${data['quantityType']}: ${data['quantity']} $unit';
 
       await text(text: quantity, x: 40, y: 100, font: fontTypes['normal']!);
@@ -118,7 +118,7 @@ class Printer {
       await text(text: 'FSSAI: ${data['companyFssai']}', x: 620, y: 215, font: fontTypes['small']!, alignment: 2);
     }
 
-    int copies = int.tryParse(data['copies']) ?? 1;
+    int copies = data['copies'] ?? 1;
     copies = (copies / 2).ceil();
 
     await sendCommand('PRINT $copies\r\n');
