@@ -49,6 +49,8 @@ class HomeBody extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: model.companies.length,
             itemBuilder: (context, index) {
+              Offset? tapPosition;
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Card(
@@ -57,35 +59,77 @@ class HomeBody extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     side: const BorderSide(width: 0.1),
                   ),
-                  child: InkWell(
+                  child: GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, '/print', arguments: model.companies[index]);
                     },
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      leading: CircleAvatar(
-                        radius: 20, // Size of the avatar
-                        child: Text(model.companies[index].columns.toString()),
-                      ),
-                      title: Row(
-                        textBaseline: TextBaseline.alphabetic,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        spacing: 10,
-                        children: [
-                          Text(
-                            model.companies[index].name,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            '(${model.companies[index].width}x${model.companies[index].height} mm)',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
+                    onLongPressStart: (details) {
+                      tapPosition = details.globalPosition;
+                    },
+                    onLongPress: () async {
+                      if (tapPosition == null) return;
+                      final selected = await showMenu<String>(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          tapPosition!.dx,
+                          tapPosition!.dy,
+                          MediaQuery.of(context).size.width - tapPosition!.dx,
+                          MediaQuery.of(context).size.height - tapPosition!.dy,
+                        ),
+                        items: [
+                          const PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
+                          const PopupMenuItem<String>(value: 'delete', child: Text('Delete')),
                         ],
+                      );
+
+                      if (selected == 'edit') {
+                        Navigator.pushNamed(
+                          context,
+                          '/edit-company',
+                          arguments: {'company': model.companies[index], 'index': index},
+                        );
+                      } else if (selected == 'delete') {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder:
+                              (ctx) => AlertDialog(
+                                title: const Text('Delete Company'),
+                                content: const Text('Are you sure you want to delete this company?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
+                                ],
+                              ),
+                        );
+                        if (confirm == true) {
+                          model.delete(index);
+                        }
+                      }
+                    },
+                    child: InkWell(
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        leading: CircleAvatar(radius: 20, child: Text(model.companies[index].columns.toString())),
+                        title: Row(
+                          textBaseline: TextBaseline.alphabetic,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          spacing: 10,
+                          children: [
+                            Text(
+                              model.companies[index].name,
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              '(${model.companies[index].width}x${model.companies[index].height} mm)',
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        subtitle: Text(model.companies[index].address, overflow: TextOverflow.ellipsis, maxLines: 1),
                       ),
-                      // title: Text(
-                      //   '${model.companies[index].name} (${model.companies[index].width}x${model.companies[index].height} mm)',
-                      // ),
-                      subtitle: Text(model.companies[index].address, overflow: TextOverflow.ellipsis, maxLines: 1),
                     ),
                   ),
                 ),
