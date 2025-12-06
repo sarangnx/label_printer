@@ -66,9 +66,13 @@ class Printer {
   Future<void> printLabel(Map<String, dynamic> data) async {
     await init();
 
-    int width = data['columns'] * data['width'];
-    int offset = (data['width'] + data['columnGap']) * 8; // convert mm to dots
     int direction = data['reverseDirection'] ? 1 : 0;
+    int width = data['columns'] * data['width'];
+
+    // convert mm to dots
+    int offset = (data['width'] + data['columnGap']) * 8;
+    int marginTop = data['marginTop'] * 8;
+    int marginLeft = data['marginLeft'] * 8;
 
     await sendCommand('SIZE $width mm,${data['height']} mm\r\n');
     await sendCommand('GAP ${data['rowGap']} mm,0 mm\r\n');
@@ -83,18 +87,24 @@ class Printer {
         await text(
           text: data['companyName'],
           x: 200 + (offset * i),
-          y: 10,
+          y: marginTop + 10,
           font: fontTypes['largeBold']!,
           alignment: 2,
         );
 
-        await text(text: data['companyAddress'], x: 200 + (offset * i), y: 35, font: fontTypes['small']!, alignment: 2);
+        await text(
+          text: data['companyAddress'],
+          x: 200 + (offset * i),
+          y: marginTop + 35,
+          font: fontTypes['small']!,
+          alignment: 2,
+        );
 
         if (data['companyPhone'] != null && data['companyPhone'].isNotEmpty) {
           await text(
             text: '#: ${data['companyPhone']}',
             x: 200 + (offset * i),
-            y: 50,
+            y: marginTop + 50,
             font: fontTypes['small']!,
             alignment: 2,
           );
@@ -102,33 +112,54 @@ class Printer {
       }
 
       if (data['productName'] != null && data['productName'].isNotEmpty) {
-        await text(text: data['productName'], x: 200 + (offset * i), y: 75, font: fontTypes['bold']!, alignment: 2);
+        await text(
+          text: data['productName'],
+          x: 200 + (offset * i),
+          y: marginTop + 75,
+          font: fontTypes['bold']!,
+          alignment: 2,
+        );
       }
 
       if (data['quantityType'] != 'None') {
         var unit = data['quantityType'] == 'Weight' ? data['unit'] : '';
         var quantity = '${data['quantityType']}: ${data['quantity']} $unit';
 
-        await text(text: quantity, x: 40 + (offset * i), y: 100, font: fontTypes['normal']!);
+        await text(text: quantity, x: marginLeft + (offset * i), y: marginTop + 100, font: fontTypes['normal']!);
       }
 
-      await text(text: 'MRP: Rs. ${data['mrp']}', x: 40 + (offset * i), y: 120, font: fontTypes['normal']!);
+      await text(
+        text: 'MRP: Rs. ${data['mrp']}',
+        x: marginLeft + (offset * i),
+        y: marginTop + 120,
+        font: fontTypes['normal']!,
+      );
 
-      await text(text: 'MFG: ${data['mfgDate']}', x: 40 + (offset * i), y: 150, font: fontTypes['normal']!);
+      await text(
+        text: 'MFG: ${data['mfgDate']}',
+        x: marginLeft + (offset * i),
+        y: marginTop + 150,
+        font: fontTypes['normal']!,
+      );
 
       if (data['showExpiryDate']) {
-        await text(text: 'Expiry: ${data['expiryDate']}', x: 40 + (offset * i), y: 170, font: fontTypes['normal']!);
+        await text(
+          text: 'Expiry: ${data['expiryDate']}',
+          x: marginLeft + (offset * i),
+          y: marginTop + 170,
+          font: fontTypes['normal']!,
+        );
       } else if (data['showBestBefore']) {
         var bestBefore = 'Best before ${data['bestBefore']} ${data['bestBeforeUnit']}';
 
-        await text(text: bestBefore, x: 40 + (offset * i), y: 170, font: fontTypes['normal']!);
+        await text(text: bestBefore, x: marginLeft + (offset * i), y: marginTop + 170, font: fontTypes['normal']!);
       }
 
       if (!data['hideCompanyDetails'] && data['companyFssai'] != null && data['companyFssai'].isNotEmpty) {
         await text(
           text: 'FSSAI: ${data['companyFssai']}',
           x: 200 + (offset * i),
-          y: 215,
+          y: marginTop + 205,
           font: fontTypes['small']!,
           alignment: 2,
         );

@@ -47,6 +47,8 @@ class _AddCompanyForm extends State<AddCompany> {
   final TextEditingController _columns = TextEditingController(text: '2');
   final TextEditingController _columnGap = TextEditingController(text: '3');
   final TextEditingController _rowGap = TextEditingController(text: '3');
+  final TextEditingController _marginTop = TextEditingController(text: '2');
+  final TextEditingController _marginLeft = TextEditingController(text: '5');
 
   bool _reverseDirection = false;
   bool _hideCompanyDetails = false;
@@ -172,6 +174,29 @@ class _AddCompanyForm extends State<AddCompany> {
                     child: TextFormField(
                       controller: _rowGap,
                       decoration: const InputDecoration(labelText: 'Row Gap (mm)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _marginTop,
+                      decoration: const InputDecoration(labelText: 'Margin Top (mm)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _marginLeft,
+                      decoration: const InputDecoration(labelText: 'Margin Left (mm)'),
                       keyboardType: TextInputType.number,
                     ),
                   ),

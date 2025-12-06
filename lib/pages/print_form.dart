@@ -509,6 +509,8 @@ class PrinterForm extends State<_PrintForm> {
                             'rowGap': widget.company.rowGap,
                             'reverseDirection': widget.company.reverseDirection,
                             'hideCompanyDetails': widget.company.hideCompanyDetails,
+                            'marginTop': widget.company.marginTop,
+                            'marginLeft': widget.company.marginLeft,
                           };
 
                           try {
