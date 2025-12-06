@@ -21,7 +21,7 @@ class PrintFormPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        // resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text('Print')),
         body: SafeArea(
           child: Column(children: [Expanded(child: _PrintForm(key: ValueKey(company.name), company: company))]),
@@ -525,6 +525,8 @@ class PrinterForm extends State<_PrintForm> {
                                   content: Text('Label printed!'),
                                   backgroundColor: Theme.of(context).colorScheme.primary,
                                   behavior: SnackBarBehavior.floating,
+                                  showCloseIcon: true,
+                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                 ),
                               );
                             }
@@ -540,6 +542,8 @@ class PrinterForm extends State<_PrintForm> {
                                   content: Text('Label printing failed!'),
                                   backgroundColor: Theme.of(context).colorScheme.error,
                                   behavior: SnackBarBehavior.floating,
+                                  showCloseIcon: true,
+                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                 ),
                               );
                             }
