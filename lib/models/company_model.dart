@@ -29,6 +29,22 @@ class CompanyModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// update a company at a specific index
+  void update(int index, Company company) async {
+    if (index < 0 || index >= _companies.length) return;
+    _companies[index] = company;
+
+    File file = await openFile();
+    String contents = await file.readAsString();
+    List<dynamic> companies = contents != '' ? jsonDecode(contents) : [];
+    if (index < companies.length) {
+      companies[index] = company.toJson();
+      contents = jsonEncode(companies);
+      await file.writeAsString(contents);
+    }
+    notifyListeners();
+  }
+
   /// load data from localstorage
   void loadData() async {
     File file = await openFile();
