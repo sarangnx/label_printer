@@ -42,6 +42,13 @@ class _AddCompanyForm extends State<AddCompany> {
   final TextEditingController _companyPhone = TextEditingController();
   final TextEditingController _companyEmail = TextEditingController();
   final TextEditingController _companyFssai = TextEditingController();
+  final TextEditingController _width = TextEditingController(text: '50');
+  final TextEditingController _height = TextEditingController(text: '30');
+  final TextEditingController _columns = TextEditingController(text: '2');
+  final TextEditingController _columnGap = TextEditingController(text: '3');
+  final TextEditingController _rowGap = TextEditingController(text: '3');
+
+  bool _reverseDirection = false;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +123,94 @@ class _AddCompanyForm extends State<AddCompany> {
               ),
             ),
 
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Divider(thickness: 1.5),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text('Label Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _width,
+                      decoration: const InputDecoration(labelText: 'Label Width (mm)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _height,
+                      decoration: const InputDecoration(labelText: 'Label Height (mm)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _columnGap,
+                      decoration: const InputDecoration(labelText: 'Column Gap (mm)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _rowGap,
+                      decoration: const InputDecoration(labelText: 'Row Gap (mm)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _columns,
+                      decoration: const InputDecoration(labelText: 'Number of labels in a row'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                spacing: 8,
+                children: [
+                  Switch(
+                    value: _reverseDirection,
+                    onChanged: (value) {
+                      setState(() {
+                        _reverseDirection = value;
+                      });
+                    },
+                  ),
+                  Text('Reverse Print Direction'),
+                ],
+              ),
+            ),
+
             // Submit Button
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -133,6 +228,12 @@ class _AddCompanyForm extends State<AddCompany> {
                         'phone': _companyPhone.text,
                         'email': _companyEmail.text,
                         'fssai': _companyFssai.text,
+                        'width': int.tryParse(_width.text) ?? 50,
+                        'height': int.tryParse(_height.text) ?? 30,
+                        'columns': int.tryParse(_columns.text) ?? 2,
+                        'columnGap': int.tryParse(_columnGap.text) ?? 3,
+                        'rowGap': int.tryParse(_rowGap.text) ?? 3,
+                        'reverseDirection': _reverseDirection,
                       };
 
                       var company = Company.fromJson(companyData);
