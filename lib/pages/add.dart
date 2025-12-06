@@ -295,13 +295,8 @@ class _AddCompanyForm extends State<AddCompany> {
                         ),
                       );
 
-                      // Clear the form
-                      _formKey.currentState!.reset();
-                      _companyName.clear();
-                      _companyAddress.clear();
-                      _companyPhone.clear();
-                      _companyEmail.clear();
-                      _companyFssai.clear();
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
                     }
                   },
                   child: Row(
