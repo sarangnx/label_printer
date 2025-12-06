@@ -4,54 +4,75 @@ import 'package:provider/provider.dart';
 import '../models/company.dart';
 import '../models/company_model.dart';
 
-class AddCompanyPage extends StatelessWidget {
-  const AddCompanyPage({super.key});
+class EditCompanyPage extends StatelessWidget {
+  final Company company;
+  final int index;
+  const EditCompanyPage({super.key, required this.company, required this.index});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
-
-        // This is used to dismiss the keyboard when tapping outside of a text field
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
       },
       child: Scaffold(
-        // resizeToAvoidBottomInset: true,
-        appBar: AppBar(title: Text('Add Company')),
-        body: SafeArea(child: Column(children: [Expanded(child: AddCompany())])),
+        appBar: AppBar(title: const Text('Edit Company')),
+        body: SafeArea(child: Column(children: [Expanded(child: EditCompanyForm(company: company, index: index))])),
       ),
     );
   }
 }
 
-class AddCompany extends StatefulWidget {
-  const AddCompany({super.key});
+class EditCompanyForm extends StatefulWidget {
+  final Company company;
+  final int index;
+  const EditCompanyForm({super.key, required this.company, required this.index});
 
   @override
-  State<AddCompany> createState() => _AddCompanyForm();
+  State<EditCompanyForm> createState() => _EditCompanyFormState();
 }
 
-class _AddCompanyForm extends State<AddCompany> {
+class _EditCompanyFormState extends State<EditCompanyForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _companyName = TextEditingController();
-  final TextEditingController _companyAddress = TextEditingController();
-  final TextEditingController _companyPhone = TextEditingController();
-  final TextEditingController _companyEmail = TextEditingController();
-  final TextEditingController _companyFssai = TextEditingController();
-  final TextEditingController _width = TextEditingController(text: '50');
-  final TextEditingController _height = TextEditingController(text: '30');
-  final TextEditingController _columns = TextEditingController(text: '2');
-  final TextEditingController _columnGap = TextEditingController(text: '3');
-  final TextEditingController _rowGap = TextEditingController(text: '3');
-  final TextEditingController _marginTop = TextEditingController(text: '2');
-  final TextEditingController _marginLeft = TextEditingController(text: '5');
+  late TextEditingController _companyName;
+  late TextEditingController _companyAddress;
+  late TextEditingController _companyPhone;
+  late TextEditingController _companyEmail;
+  late TextEditingController _companyFssai;
+  late TextEditingController _width;
+  late TextEditingController _height;
+  late TextEditingController _columns;
+  late TextEditingController _columnGap;
+  late TextEditingController _rowGap;
+  late TextEditingController _marginTop;
+  late TextEditingController _marginLeft;
 
-  bool _reverseDirection = false;
-  bool _hideCompanyDetails = false;
+  late bool _reverseDirection;
+  late bool _hideCompanyDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    final c = widget.company;
+    _companyName = TextEditingController(text: c.name);
+    _companyAddress = TextEditingController(text: c.address);
+    _companyPhone = TextEditingController(text: c.phone);
+    _companyEmail = TextEditingController(text: c.email);
+    _companyFssai = TextEditingController(text: c.fssai);
+    _width = TextEditingController(text: c.width.toString());
+    _height = TextEditingController(text: c.height.toString());
+    _columns = TextEditingController(text: c.columns.toString());
+    _columnGap = TextEditingController(text: c.columnGap.toString());
+    _rowGap = TextEditingController(text: c.rowGap.toString());
+    _marginTop = TextEditingController(text: c.marginTop.toString());
+    _marginLeft = TextEditingController(text: c.marginLeft.toString());
+    _reverseDirection = c.reverseDirection;
+    _hideCompanyDetails = c.hideCompanyDetails;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +82,7 @@ class _AddCompanyForm extends State<AddCompany> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Company Name
+            // ...existing code from AddCompanyForm, but using the above controllers and bools...
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextFormField(
@@ -75,8 +96,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 },
               ),
             ),
-
-            // Company Address
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextFormField(
@@ -90,8 +109,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 },
               ),
             ),
-
-            // Company Phone
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextFormField(
@@ -106,8 +123,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 },
               ),
             ),
-
-            // Company Email
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextFormField(
@@ -116,8 +131,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 keyboardType: TextInputType.emailAddress,
               ),
             ),
-
-            // Company FSSAI
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextFormField(
@@ -125,7 +138,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 decoration: const InputDecoration(labelText: 'Company FSSAI'),
               ),
             ),
-
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Divider(thickness: 1.5),
@@ -134,7 +146,6 @@ class _AddCompanyForm extends State<AddCompany> {
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text('Label Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -157,7 +168,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -180,7 +190,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -203,7 +212,6 @@ class _AddCompanyForm extends State<AddCompany> {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -218,11 +226,9 @@ class _AddCompanyForm extends State<AddCompany> {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
-                spacing: 8,
                 children: [
                   Switch(
                     value: _reverseDirection,
@@ -232,15 +238,13 @@ class _AddCompanyForm extends State<AddCompany> {
                       });
                     },
                   ),
-                  Text('Reverse Print Direction'),
+                  const Text('Reverse Print Direction'),
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
-                spacing: 8,
                 children: [
                   Switch(
                     value: _hideCompanyDetails,
@@ -250,60 +254,51 @@ class _AddCompanyForm extends State<AddCompany> {
                       });
                     },
                   ),
-                  Text('Hide company details on label'),
+                  const Text('Hide company details on label'),
                 ],
               ),
             ),
-
-            // Submit Button
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Expanded(
-                child: FilledButton(
-                  style: Theme.of(context).filledButtonTheme.style!.copyWith(
-                    padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16)),
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Collect data and handle submission
-                      final companyData = {
-                        'name': _companyName.text,
-                        'address': _companyAddress.text,
-                        'phone': _companyPhone.text,
-                        'email': _companyEmail.text,
-                        'fssai': _companyFssai.text,
-                        'width': int.tryParse(_width.text) ?? 50,
-                        'height': int.tryParse(_height.text) ?? 30,
-                        'columns': int.tryParse(_columns.text) ?? 2,
-                        'columnGap': int.tryParse(_columnGap.text) ?? 3,
-                        'rowGap': int.tryParse(_rowGap.text) ?? 3,
-                        'reverseDirection': _reverseDirection,
-                        'hideCompanyDetails': _hideCompanyDetails,
-                        'marginTop': int.tryParse(_marginTop.text) ?? 2,
-                        'marginLeft': int.tryParse(_marginLeft.text) ?? 5,
-                      };
-
-                      var company = Company.fromJson(companyData);
-
-                      Provider.of<CompanyModel>(context, listen: false).add(company);
-
-                      // Show success message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Company added successfully!'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 10,
-                    children: [const Text('Add Company', style: TextStyle(fontSize: 16)), Icon(Icons.save, size: 20)],
-                  ),
+              child: FilledButton(
+                style: Theme.of(context).filledButtonTheme.style!.copyWith(
+                  padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 16)),
+                ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final companyData = {
+                      'name': _companyName.text,
+                      'address': _companyAddress.text,
+                      'phone': _companyPhone.text,
+                      'email': _companyEmail.text,
+                      'fssai': _companyFssai.text,
+                      'width': int.tryParse(_width.text) ?? 50,
+                      'height': int.tryParse(_height.text) ?? 30,
+                      'columns': int.tryParse(_columns.text) ?? 2,
+                      'columnGap': int.tryParse(_columnGap.text) ?? 3,
+                      'rowGap': int.tryParse(_rowGap.text) ?? 3,
+                      'marginTop': int.tryParse(_marginTop.text) ?? 2,
+                      'marginLeft': int.tryParse(_marginLeft.text) ?? 5,
+                      'reverseDirection': _reverseDirection,
+                      'hideCompanyDetails': _hideCompanyDetails,
+                    };
+                    var updatedCompany = Company.fromJson(companyData);
+                    // ignore: use_build_context_synchronously
+                    Provider.of<CompanyModel>(context, listen: false).update(widget.index, updatedCompany);
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Company updated successfully!'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [Text('Save Changes', style: TextStyle(fontSize: 16)), Icon(Icons.save, size: 20)],
                 ),
               ),
             ),

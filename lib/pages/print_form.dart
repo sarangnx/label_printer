@@ -21,7 +21,7 @@ class PrintFormPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        // resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text('Print')),
         body: SafeArea(
           child: Column(children: [Expanded(child: _PrintForm(key: ValueKey(company.name), company: company))]),
@@ -502,6 +502,15 @@ class PrinterForm extends State<_PrintForm> {
                             'companyPhone': widget.company.phone,
                             'companyEmail': widget.company.email,
                             'companyFssai': widget.company.fssai,
+                            'width': widget.company.width,
+                            'height': widget.company.height,
+                            'columns': widget.company.columns,
+                            'columnGap': widget.company.columnGap,
+                            'rowGap': widget.company.rowGap,
+                            'reverseDirection': widget.company.reverseDirection,
+                            'hideCompanyDetails': widget.company.hideCompanyDetails,
+                            'marginTop': widget.company.marginTop,
+                            'marginLeft': widget.company.marginLeft,
                           };
 
                           try {
@@ -516,6 +525,8 @@ class PrinterForm extends State<_PrintForm> {
                                   content: Text('Label printed!'),
                                   backgroundColor: Theme.of(context).colorScheme.primary,
                                   behavior: SnackBarBehavior.floating,
+                                  showCloseIcon: true,
+                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                 ),
                               );
                             }
@@ -531,6 +542,8 @@ class PrinterForm extends State<_PrintForm> {
                                   content: Text('Label printing failed!'),
                                   backgroundColor: Theme.of(context).colorScheme.error,
                                   behavior: SnackBarBehavior.floating,
+                                  showCloseIcon: true,
+                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                 ),
                               );
                             }

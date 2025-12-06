@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:label_printer/pages/edit.dart';
 
 import 'models/company.dart';
 import 'pages/add.dart';
@@ -14,6 +15,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => PrintFormPage(company: company));
     case '/add-company':
       return MaterialPageRoute(builder: (context) => AddCompanyPage());
+    case '/edit-company':
+      var args = settings.arguments as Map<String, dynamic>?;
+      var index = args?['index'] as int;
+      var company = args?['company'] as Company;
+
+      return MaterialPageRoute(builder: (context) => EditCompanyPage(index: index, company: company));
     default:
       return MaterialPageRoute(builder: (context) => HomePage());
   }

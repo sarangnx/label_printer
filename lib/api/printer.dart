@@ -65,61 +65,109 @@ class Printer {
 
   Future<void> printLabel(Map<String, dynamic> data) async {
     await init();
-    await sendCommand('SIZE 100 mm,30 mm\r\n');
-    await sendCommand('GAP 2.5 mm,0 mm\r\n');
+
+    int direction = data['reverseDirection'] ? 1 : 0;
+    int width = data['columns'] * data['width'];
+
+    // convert mm to dots
+    int offset = (data['width'] + data['columnGap']) * 8;
+    int marginTop = data['marginTop'] * 8;
+    int marginLeft = data['marginLeft'] * 8;
+
+    await sendCommand('SIZE $width mm,${data['height']} mm\r\n');
+    await sendCommand('GAP ${data['rowGap']} mm,0 mm\r\n');
     await sendCommand('CLS\r\n');
     await sendCommand('CODEPAGE UTF-8\r\n');
 
-    await sendCommand('DIRECTION 0,0\r\n');
+    await sendCommand('DIRECTION $direction,0\r\n');
     await sendCommand('REFERENCE 0,0\r\n');
 
-    await text(text: data['companyName'], x: 200, y: 10, font: fontTypes['largeBold']!, alignment: 2);
-    await text(text: data['companyName'], x: 620, y: 10, font: fontTypes['largeBold']!, alignment: 2);
+    for (var i = 0; i < data['columns']; i++) {
+      if (!data['hideCompanyDetails']) {
+        await text(
+          text: data['companyName'],
+          x: 200 + (offset * i),
+          y: marginTop + 10,
+          font: fontTypes['largeBold']!,
+          alignment: 2,
+        );
 
-    await text(text: data['companyAddress'], x: 200, y: 35, font: fontTypes['small']!, alignment: 2);
-    await text(text: data['companyAddress'], x: 620, y: 35, font: fontTypes['small']!, alignment: 2);
+        await text(
+          text: data['companyAddress'],
+          x: 200 + (offset * i),
+          y: marginTop + 35,
+          font: fontTypes['small']!,
+          alignment: 2,
+        );
 
-    if (data['companyPhone'] != null && data['companyPhone'].isNotEmpty) {
-      await text(text: '#: ${data['companyPhone']}', x: 200, y: 50, font: fontTypes['small']!, alignment: 2);
-      await text(text: '#: ${data['companyPhone']}', x: 620, y: 50, font: fontTypes['small']!, alignment: 2);
-    }
+        if (data['companyPhone'] != null && data['companyPhone'].isNotEmpty) {
+          await text(
+            text: '#: ${data['companyPhone']}',
+            x: 200 + (offset * i),
+            y: marginTop + 50,
+            font: fontTypes['small']!,
+            alignment: 2,
+          );
+        }
+      }
 
-    if (data['productName'] != null && data['productName'].isNotEmpty) {
-      await text(text: data['productName'], x: 200, y: 75, font: fontTypes['bold']!, alignment: 2);
-      await text(text: data['productName'], x: 620, y: 75, font: fontTypes['bold']!, alignment: 2);
-    }
+      if (data['productName'] != null && data['productName'].isNotEmpty) {
+        await text(
+          text: data['productName'],
+          x: 200 + (offset * i),
+          y: marginTop + 75,
+          font: fontTypes['bold']!,
+          alignment: 2,
+        );
+      }
 
-    if (data['quantityType'] != 'None') {
-      var unit = data['quantityType'] == 'Weight' ? data['unit'] : '';
-      var quantity = '${data['quantityType']}: ${data['quantity']} $unit';
+      if (data['quantityType'] != 'None') {
+        var unit = data['quantityType'] == 'Weight' ? data['unit'] : '';
+        var quantity = '${data['quantityType']}: ${data['quantity']} $unit';
 
-      await text(text: quantity, x: 40, y: 100, font: fontTypes['normal']!);
-      await text(text: quantity, x: 460, y: 100, font: fontTypes['normal']!);
-    }
+        await text(text: quantity, x: marginLeft + (offset * i), y: marginTop + 100, font: fontTypes['normal']!);
+      }
 
-    await text(text: 'MRP: Rs. ${data['mrp']}', x: 40, y: 120, font: fontTypes['normal']!);
-    await text(text: 'MRP: Rs. ${data['mrp']}', x: 460, y: 120, font: fontTypes['normal']!);
+      await text(
+        text: 'MRP: Rs. ${data['mrp']}',
+        x: marginLeft + (offset * i),
+        y: marginTop + 120,
+        font: fontTypes['normal']!,
+      );
 
-    await text(text: 'MFG: ${data['mfgDate']}', x: 40, y: 150, font: fontTypes['normal']!);
-    await text(text: 'MFG: ${data['mfgDate']}', x: 460, y: 150, font: fontTypes['normal']!);
+      await text(
+        text: 'MFG: ${data['mfgDate']}',
+        x: marginLeft + (offset * i),
+        y: marginTop + 150,
+        font: fontTypes['normal']!,
+      );
 
-    if (data['showExpiryDate']) {
-      await text(text: 'Expiry: ${data['expiryDate']}', x: 40, y: 170, font: fontTypes['normal']!);
-      await text(text: 'Expiry: ${data['expiryDate']}', x: 460, y: 170, font: fontTypes['normal']!);
-    } else if (data['showBestBefore']) {
-      var bestBefore = 'Best before ${data['bestBefore']} ${data['bestBeforeUnit']}';
+      if (data['showExpiryDate']) {
+        await text(
+          text: 'Expiry: ${data['expiryDate']}',
+          x: marginLeft + (offset * i),
+          y: marginTop + 170,
+          font: fontTypes['normal']!,
+        );
+      } else if (data['showBestBefore']) {
+        var bestBefore = 'Best before ${data['bestBefore']} ${data['bestBeforeUnit']}';
 
-      await text(text: bestBefore, x: 40, y: 170, font: fontTypes['normal']!);
-      await text(text: bestBefore, x: 460, y: 170, font: fontTypes['normal']!);
-    }
+        await text(text: bestBefore, x: marginLeft + (offset * i), y: marginTop + 170, font: fontTypes['normal']!);
+      }
 
-    if (data['companyFssai'] != null && data['companyFssai'].isNotEmpty) {
-      await text(text: 'FSSAI: ${data['companyFssai']}', x: 200, y: 215, font: fontTypes['small']!, alignment: 2);
-      await text(text: 'FSSAI: ${data['companyFssai']}', x: 620, y: 215, font: fontTypes['small']!, alignment: 2);
+      if (!data['hideCompanyDetails'] && data['companyFssai'] != null && data['companyFssai'].isNotEmpty) {
+        await text(
+          text: 'FSSAI: ${data['companyFssai']}',
+          x: 200 + (offset * i),
+          y: marginTop + 205,
+          font: fontTypes['small']!,
+          alignment: 2,
+        );
+      }
     }
 
     int copies = data['copies'] ?? 1;
-    copies = (copies / 2).ceil();
+    copies = (copies / data['columns']).ceil();
 
     await sendCommand('PRINT $copies\r\n');
 
