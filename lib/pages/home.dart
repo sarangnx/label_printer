@@ -65,10 +65,26 @@ class HomeBody extends StatelessWidget {
                       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       leading: CircleAvatar(
                         radius: 20, // Size of the avatar
-                        child: Text(model.companies[index].name[0]), // Display initials or text
+                        child: Text(model.companies[index].columns.toString()),
                       ),
-                      // trailing: const Icon(Icons.arrow_circle_right),
-                      title: Text(model.companies[index].name),
+                      title: Row(
+                        textBaseline: TextBaseline.alphabetic,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        spacing: 10,
+                        children: [
+                          Text(
+                            model.companies[index].name,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '(${model.companies[index].width}x${model.companies[index].height} mm)',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      // title: Text(
+                      //   '${model.companies[index].name} (${model.companies[index].width}x${model.companies[index].height} mm)',
+                      // ),
                       subtitle: Text(model.companies[index].address, overflow: TextOverflow.ellipsis, maxLines: 1),
                     ),
                   ),
