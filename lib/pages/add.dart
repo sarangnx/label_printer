@@ -253,6 +253,7 @@ class _AddCompanyForm extends State<AddCompany> {
                         'columnGap': int.tryParse(_columnGap.text) ?? 3,
                         'rowGap': int.tryParse(_rowGap.text) ?? 3,
                         'reverseDirection': _reverseDirection,
+                        'hideCompanyDetails': _hideCompanyDetails,
                       };
 
                       var company = Company.fromJson(companyData);

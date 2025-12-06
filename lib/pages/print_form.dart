@@ -502,6 +502,13 @@ class PrinterForm extends State<_PrintForm> {
                             'companyPhone': widget.company.phone,
                             'companyEmail': widget.company.email,
                             'companyFssai': widget.company.fssai,
+                            'width': widget.company.width,
+                            'height': widget.company.height,
+                            'columns': widget.company.columns,
+                            'columnGap': widget.company.columnGap,
+                            'rowGap': widget.company.rowGap,
+                            'reverseDirection': widget.company.reverseDirection,
+                            'hideCompanyDetails': widget.company.hideCompanyDetails,
                           };
 
                           try {
