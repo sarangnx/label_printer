@@ -49,6 +49,7 @@ class _AddCompanyForm extends State<AddCompany> {
   final TextEditingController _rowGap = TextEditingController(text: '3');
 
   bool _reverseDirection = false;
+  bool _hideCompanyDetails = false;
 
   @override
   Widget build(BuildContext context) {
@@ -207,6 +208,24 @@ class _AddCompanyForm extends State<AddCompany> {
                     },
                   ),
                   Text('Reverse Print Direction'),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                spacing: 8,
+                children: [
+                  Switch(
+                    value: _hideCompanyDetails,
+                    onChanged: (value) {
+                      setState(() {
+                        _hideCompanyDetails = value;
+                      });
+                    },
+                  ),
+                  Text('Hide company details on label'),
                 ],
               ),
             ),

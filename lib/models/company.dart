@@ -11,6 +11,7 @@ class Company {
   int columnGap;
   int rowGap;
   bool reverseDirection;
+  bool hideCompanyDetails;
 
   Company({
     required this.name,
@@ -24,6 +25,7 @@ class Company {
     this.columnGap = 3,
     this.rowGap = 3,
     this.reverseDirection = false,
+    this.hideCompanyDetails = false,
   });
 
   Company.fromJson(Map<String, dynamic> json)
@@ -37,7 +39,8 @@ class Company {
       columns = json['columns'] is int ? json['columns'] : int.tryParse(json['columns'] ?? '2') ?? 2,
       columnGap = json['columnGap'] is int ? json['columnGap'] : int.tryParse(json['columnGap'] ?? '3') ?? 3,
       rowGap = json['rowGap'] is int ? json['rowGap'] : int.tryParse(json['rowGap'] ?? '3') ?? 3,
-      reverseDirection = json['reverseDirection'] ?? false;
+      reverseDirection = json['reverseDirection'] ?? false,
+      hideCompanyDetails = json['hideCompanyDetails'] ?? false;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -53,6 +56,7 @@ class Company {
     data['columnGap'] = columnGap;
     data['rowGap'] = rowGap;
     data['reverseDirection'] = reverseDirection;
+    data['hideCompanyDetails'] = hideCompanyDetails;
 
     return data;
   }
